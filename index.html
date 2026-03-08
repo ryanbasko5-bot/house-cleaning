@@ -137,21 +137,6 @@
     .yt-where { font-size: 0.72rem; opacity: 0.8; margin-top: 1px; }
     .yt-date { font-size: 0.68rem; opacity: 0.7; margin-top: 1px; }
 
-    .wa-btn {
-      margin-top: 10px;
-      width: 100%;
-      background: #25D366;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 12px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      cursor: pointer;
-      min-height: 44px;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .wa-btn:active { transform: scale(0.97); opacity: 0.9; }
 
     /* ── Section headings ── */
     .section-title {
@@ -180,7 +165,6 @@
 
     .day-card  { border-left: 4px solid var(--amber); }
     .day-card.today { border-left: 4px solid var(--green); box-shadow: 0 4px 18px rgba(5,150,105,0.2); }
-    .room-card { border-left: 4px solid var(--purple); }
     .area-card { border-left: 4px solid var(--pink); }
 
     .card-head { margin-bottom: 6px; }
@@ -289,9 +273,6 @@
     <h2 class="section-title">🗑️ Daily Trash Duty</h2>
     <section class="grid two-col" id="trashGrid"></section>
 
-    <h2 class="section-title">🛏️ Bedrooms</h2>
-    <section class="grid" id="bedroomGrid"></section>
-
     <h2 class="section-title">🧹 Shared Areas — Weekly Rotation</h2>
     <section class="grid" id="sharedGrid"></section>
 
@@ -321,18 +302,7 @@
     const OCCUPIED_RESIDENTS = ["Makayla","Henry","Maeve","Megan","Ryan","Diago","Astrid","Rohain","Svetlana","Ziyue"];
     const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 
-    const allRooms = [
-      { id:"d1", floor:"Downstairs", occupants:"Makayla",           roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
-      { id:"d2", floor:"Downstairs", occupants:"Henry & Maeve",     roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
-      { id:"d3", floor:"Downstairs", occupants:"Megan",             roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
-      { id:"d4", floor:"Downstairs", occupants:"Ryan",              roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
-      { id:"u1", floor:"Upstairs",   occupants:"Vacant",            roomTasks:[], vacant:true },
-      { id:"u2", floor:"Upstairs",   occupants:"Diago & Astrid",    roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
-      { id:"u3", floor:"Upstairs",   occupants:"Rohain & Svetlana", roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
-      { id:"u4", floor:"Upstairs",   occupants:"Ziyue",             roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
-    ];
-
-    const sharedAreas = [
+const sharedAreas = [
       { id:"sa_bath_down", name:"🚿 Downstairs Bathroom", tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
       { id:"sa_bath_up",   name:"🚿 Upstairs Bathroom",   tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
       { id:"sa_kitchen",   name:"🍳 Kitchen",             tasks:["Wipe benches & clean sink","Clean stovetop & appliance fronts","Sweep & mop kitchen floor","Empty & reline bins"] },
@@ -390,7 +360,6 @@
     function allTaskDefinitions(rs) {
       const defs=[], ta=getTrashAssignments(rs);
       DAYS.forEach((day,i)=>{ const dd=getDayDate(i); defs.push({id:`trash_${i}`,section:"🗑️ Trash",task:"Take trash to bins",assignedTo:ta[i],day,date:dd,dateStr:shortDate(dd)}); });
-      allRooms.forEach(room=>{ if(room.vacant) return; room.roomTasks.forEach((task,i)=>{ defs.push({id:`room_${room.id}_${i}`,section:"🛏️ Your Bedroom",task,assignedTo:room.occupants,day:"This week",date:null,dateStr:"anytime this week"}); }); });
       const sa=getSharedAssignments(rs); sharedAreas.forEach(area=>{ area.tasks.forEach((task,i)=>{ defs.push({id:`shared_${area.id}_${i}`,section:area.name,task,assignedTo:sa[area.id],day:"This week",date:null,dateStr:"anytime this week"}); }); });
       return defs;
     }
@@ -445,21 +414,6 @@
         section.appendChild(item);
       });
 
-      const waBtn=document.createElement("button");
-      waBtn.className="wa-btn";
-      waBtn.textContent=`💬 Send ${selectedPerson} a WhatsApp reminder`;
-      waBtn.onclick=()=>sendWhatsAppReminder(selectedPerson,myTasks,tasks);
-      section.appendChild(waBtn);
-    }
-
-    /* ══════════ WHATSAPP ══════════ */
-    function sendWhatsAppReminder(name,myTasks,tasks) {
-      const pending=myTasks.filter(d=>!tasks[d.id]);
-      if(!pending.length){alert(`${name} has finished all their tasks! 🎉`);return;}
-      let msg=`🏡 *10 Glenfield St — Cleaning Reminder*\n\nHey ${name}! Here's what you still need to do:\n\n`;
-      pending.forEach((t,i)=>{msg+=`${i+1}. *${t.task}*\n   📍 ${t.section}\n   📅 ${t.dateStr}\n\n`;});
-      msg+=`✅ Tick them off here:\nhttps://ryanbasko5-bot.github.io/house-cleaning/`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,"_blank");
     }
 
     /* ══════════ RENDER: TRASH ══════════ */
@@ -482,24 +436,7 @@
       });
     }
 
-    /* ══════════ RENDER: BEDROOMS ══════════ */
-    function renderBedrooms(tasks) {
-      const target=document.getElementById("bedroomGrid"); target.innerHTML="";
-      allRooms.forEach(room=>{
-        const card=document.createElement("article");
-        const mine=selectedPerson&&isAssignedToPerson(room.occupants,selectedPerson);
-        const faded=selectedPerson&&!mine;
-        card.className=`room-card${faded?" faded":""}`;
-        const icon=room.vacant?"🚧":"👤";
-        card.innerHTML=`<div class="card-head"><div class="card-title">${icon} ${room.occupants}</div><div class="card-sub">${room.floor} · 📅 anytime this week</div></div><div class="task-list"></div>`;
-        const list=card.querySelector(".task-list");
-        if(room.vacant){ const v=document.createElement("div"); v.style.cssText="color:var(--muted);font-size:0.82rem;padding:4px;"; v.textContent="Unoccupied — excluded from rotation"; list.appendChild(v); }
-        else { room.roomTasks.forEach((t,i)=>{list.appendChild(renderTaskRow(`room_${room.id}_${i}`,t,Boolean(tasks[`room_${room.id}_${i}`])));}); }
-        target.appendChild(card);
-      });
-    }
-
-    /* ══════════ RENDER: SHARED ══════════ */
+/* ══════════ RENDER: SHARED ══════════ */
     function renderShared(rs,tasks) {
       const target=document.getElementById("sharedGrid"); target.innerHTML="";
       const assignments=getSharedAssignments(rs);
@@ -540,7 +477,7 @@
       document.getElementById("todayDate").textContent=now.toLocaleDateString("en-AU",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
       const ws=getWeekStartSunday(),we=new Date(ws); we.setDate(ws.getDate()+6);
       document.getElementById("weekRange").textContent=`Week: ${formatDate(ws)} → ${formatDate(we)}`;
-      renderPicker(); renderYourTasks(rs,tasks); renderTrash(rs,tasks); renderBedrooms(tasks); renderShared(rs,tasks); renderProgress(rs,tasks); renderEmailNotice();
+      renderPicker(); renderYourTasks(rs,tasks); renderTrash(rs,tasks); renderShared(rs,tasks); renderProgress(rs,tasks); renderEmailNotice();
     }
 
     /* ══════════ EVENTS ══════════ */
