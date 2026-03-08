@@ -606,14 +606,59 @@ const sharedAreas = [
       const pct=defs.length?Math.round(done.length/defs.length*100):0;
       const ws=getWeekStartSunday(),we=new Date(ws); we.setDate(ws.getDate()+6);
       const doneDates=loadDoneDates();
-      let txt = `🏡 Weekly Cleaning Report\n`;
-      txt += `${formatDate(ws)} → ${formatDate(we)}\n`;
-      txt += `${done.length}/${defs.length} completed (${pct}%)\n`;
-      txt += `\n${'─'.repeat(40)}\n`;
-      txt += `\n✅ COMPLETED (${done.length})\n`;
-      if(done.length){ done.forEach(item=>{ const doneOn=doneDates[item.id]; txt += `  • ${item.assignedTo} — ${item.section} — ${item.task} (${item.dateStr})${doneOn ? ' ✅ Done '+doneOn : ''}\n`; }); } else { txt += `  None yet.\n`; }
-      txt += `\n❌ NOT COMPLETED (${pending.length})\n`;
-      if(pending.length){ pending.forEach(item=>{ txt += `  • ${item.assignedTo} — ${item.section} — ${item.task} (${item.dateStr})\n`; }); } else { txt += `  All tasks complete! 🎉\n`; }
+      const sa=getSharedAssignments(rs);
+
+      // Group tasks by person
+      const byPerson={};
+      OCCUPIED_RESIDENTS.forEach(r=>{ byPerson[r]={done:[],pending:[]}; });
+      defs.forEach(d=>{
+        const names=d.assignedTo.split(/\s*&\s*/);
+        names.forEach(n=>{
+          const name=n.trim();
+          if(!byPerson[name]) return;
+          if(tasks[d.id]){ byPerson[name].done.push(d); } else { byPerson[name].pending.push(d); }
+        });
+      });
+
+      let txt = '';
+      txt += '======================================\n';
+      txt += '  WEEKLY CLEANING REPORT\n';
+      txt += '  10 Glenfield Street\n';
+      txt += `  ${formatDate(ws)} - ${formatDate(we)}\n`;
+      txt += '======================================\n\n';
+      txt += `  PROGRESS: ${done.length} / ${defs.length} tasks done (${pct}%)\n\n`;
+      txt += '--------------------------------------\n';
+      txt += '  TASKS BY PERSON\n';
+      txt += '--------------------------------------\n\n';
+
+      OCCUPIED_RESIDENTS.forEach(name=>{
+        const p=byPerson[name];
+        const total=p.done.length+p.pending.length;
+        if(total===0) return;
+        txt += `${name}  (${p.done.length}/${total} done)\n`;
+        p.done.forEach(d=>{
+          const doneOn=doneDates[d.id];
+          txt += `  [x] ${d.task} - ${d.section}${doneOn?' ('+doneOn+')':''}\n`;
+        });
+        p.pending.forEach(d=>{
+          txt += `  [ ] ${d.task} - ${d.section}\n`;
+        });
+        txt += '\n';
+      });
+
+      txt += '--------------------------------------\n';
+      txt += '  SUMMARY\n';
+      txt += '--------------------------------------\n\n';
+      txt += `  Completed:     ${done.length}\n`;
+      txt += `  Not completed: ${pending.length}\n`;
+      txt += `  Total:         ${defs.length}\n\n`;
+
+      if(pending.length===0){ txt += '  All tasks complete! Well done everyone!\n'; }
+      else {
+        txt += '  STILL OUTSTANDING:\n';
+        pending.forEach(d=>{ txt += `  - ${d.assignedTo}: ${d.task} (${d.section})\n`; });
+      }
+      txt += '\n======================================\n';
       return txt;
     }
 
