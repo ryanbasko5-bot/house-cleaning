@@ -320,18 +320,34 @@
     const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 
 const sharedAreas = [
-      // Bathrooms — restricted pools (only users of that bathroom)
-      { id:"sa_bath_down", name:"🚿 Downstairs Bathroom", bathPool:"down", tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
-      { id:"sa_bath_up",   name:"🚿 Upstairs Bathroom",   bathPool:"up",   tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
-      // General areas — rotate among remaining residents (after bathroom exclusion)
-      { id:"sa_kitchen_a", name:"🍳 Kitchen – Surfaces",  tasks:["Wipe benches & clean sink","Clean stovetop & appliance fronts","Wipe splashback & rangehood"] },
-      { id:"sa_kitchen_b", name:"🍳 Kitchen – Floors & Bins", tasks:["Sweep & mop kitchen floor","Empty & reline all bins","Wipe cupboard fronts"] },
-      { id:"sa_laundry",   name:"🧺 Laundry Room",        tasks:["Wipe machines & surfaces","Clean laundry sink","Sweep & mop floor"] },
-      { id:"sa_ver_down",  name:"🌿 Downstairs Veranda",  tasks:["Sweep & mop veranda floor","Wipe down furniture","Tidy shoes & items"] },
-      { id:"sa_ver_up",    name:"🌿 Upstairs Veranda",    tasks:["Sweep & mop veranda floor","Wipe down furniture","Tidy items & railings"] },
-      { id:"sa_hall_up",   name:"🚪 Upstairs Hallway",    tasks:["Sweep & mop hallway floor","Wipe light switches & door handles","Dust skirting boards & banisters"] },
-      { id:"sa_hall_down", name:"🚪 Downstairs Hallway",  tasks:["Sweep & mop hallway floor","Wipe light switches & door handles","Dust skirting boards & shoe rack"] },
+      // Bathrooms — restricted pools, weekly
+      { id:"sa_bath_down", name:"🚿 Downstairs Bathroom", bathPool:"down", freq:1, tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
+      { id:"sa_bath_up",   name:"🚿 Upstairs Bathroom",   bathPool:"up",   freq:1, tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
+      // Kitchen — weekly
+      { id:"sa_kitchen_a", name:"🍳 Kitchen – Surfaces",      freq:1, tasks:["Wipe benches & clean sink","Clean stovetop & appliance fronts","Wipe rangehood"] },
+      { id:"sa_kitchen_b", name:"🍳 Kitchen – Floors & Bins", freq:1, tasks:["Sweep & mop kitchen floor","Empty & reline all bins"] },
+      // Fortnightly areas
+      { id:"sa_laundry",   name:"🧺 Laundry Room",        freq:2, tasks:["Wipe machines & surfaces","Clean laundry sink","Sweep & mop floor"] },
+      { id:"sa_ver_down",  name:"🌿 Downstairs Veranda",  freq:2, tasks:["Sweep & mop veranda floor","Wipe down furniture","Tidy items"] },
+      { id:"sa_ver_up",    name:"🌿 Upstairs Veranda",    freq:2, tasks:["Sweep & mop veranda floor","Wipe down furniture","Tidy items"] },
+      { id:"sa_hall_up",   name:"🚪 Upstairs Hallway",    freq:2, tasks:["Sweep & mop hallway floor","Wipe light switches & door handles"] },
+      { id:"sa_hall_down", name:"🚪 Downstairs Hallway",  freq:2, tasks:["Sweep & mop hallway floor","Wipe light switches & door handles"] },
+      { id:"sa_stairs",    name:"🧭 Staircase",            freq:2, tasks:["Vacuum staircase","Mop staircase"] },
     ];
+
+    // Determine which areas are active this week based on frequency
+    function getActiveAreas(weekNumber) {
+      return sharedAreas.filter(a => {
+        if (a.freq === 1) return true;           // weekly — always
+        if (a.freq === 2) return weekNumber % 2 === 0; // fortnightly — even weeks
+        return true;
+      });
+    }
+    function getWeekNumber() {
+      const anchor = new Date("2026-03-08T00:00:00");
+      const now = getWeekStartSunday();
+      return Math.round((now - anchor) / (7 * 864e5));
+    }
 
     /* ── Date helpers ── */
     function toDateOnlyKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
@@ -362,14 +378,21 @@ const sharedAreas = [
 
     function advanceRotationToCurrentWeek() {
       const s=getRotationState(), cur=getCurrentWeekKey(), jumps=weeksBetween(s.anchorWeekKey,cur);
-      const generalCount = sharedAreas.filter(a=>!a.bathPool).length; // 7
       if(jumps>0){
         const n=OCCUPIED_RESIDENTS.length;
-        // General pool is 8 people (10 minus 2 bathroom assignees), rotate by 7 areas
-        s.sharedStartIndex=(s.sharedStartIndex+generalCount*jumps)%8;
-        s.trashStartIndex=(s.trashStartIndex+DAYS.length*jumps)%n;
-        s.bathDownIndex=(s.bathDownIndex+jumps)%DOWNSTAIRS_BATH_USERS.length;
-        s.bathUpIndex=(s.bathUpIndex+jumps)%UPSTAIRS_BATH_USERS.length;
+        // Advance each index per jump (week by week for correct modular arithmetic)
+        for(let j=0;j<jumps;j++){
+          const wn=getWeekNumber()-(jumps-1-j);
+          const active=getActiveAreas(wn);
+          const generalCount=active.filter(a=>!a.bathPool).length;
+          const bathActive=active.filter(a=>a.bathPool);
+          const takenCount=bathActive.length; // 0,1, or 2 bathroom assignees excluded
+          const poolSize=n-takenCount;
+          s.sharedStartIndex=(s.sharedStartIndex+generalCount)%(poolSize||1);
+          s.trashStartIndex=(s.trashStartIndex+DAYS.length)%n;
+          if(bathActive.find(a=>a.bathPool==="down")) s.bathDownIndex=(s.bathDownIndex+1)%DOWNSTAIRS_BATH_USERS.length;
+          if(bathActive.find(a=>a.bathPool==="up")) s.bathUpIndex=(s.bathUpIndex+1)%UPSTAIRS_BATH_USERS.length;
+        }
         s.anchorWeekKey=cur;
       }
       saveRotationState(s); return s;
@@ -393,17 +416,21 @@ const sharedAreas = [
     /* ── Assignments ── */
     function getSharedAssignments(rs) {
       const o={};
-      // 1. Assign bathrooms first from restricted pools
-      const bathDownPerson = DOWNSTAIRS_BATH_USERS[rs.bathDownIndex % DOWNSTAIRS_BATH_USERS.length];
-      const bathUpPerson = UPSTAIRS_BATH_USERS[rs.bathUpIndex % UPSTAIRS_BATH_USERS.length];
-      o["sa_bath_down"] = bathDownPerson;
-      o["sa_bath_up"] = bathUpPerson;
-      // 2. Exclude bathroom assignees from general pool so nobody gets 2 areas
-      const taken = new Set([bathDownPerson, bathUpPerson]);
+      const wn = getWeekNumber();
+      const active = getActiveAreas(wn);
+      // 1. Assign bathrooms first from restricted pools (if active this week)
+      const bathDown = active.find(a => a.bathPool === "down");
+      const bathUp = active.find(a => a.bathPool === "up");
+      const bathDownPerson = bathDown ? DOWNSTAIRS_BATH_USERS[rs.bathDownIndex % DOWNSTAIRS_BATH_USERS.length] : null;
+      const bathUpPerson = bathUp ? UPSTAIRS_BATH_USERS[rs.bathUpIndex % UPSTAIRS_BATH_USERS.length] : null;
+      if (bathDown) o[bathDown.id] = bathDownPerson;
+      if (bathUp) o[bathUp.id] = bathUpPerson;
+      // 2. Exclude bathroom assignees from general pool
+      const taken = new Set([bathDownPerson, bathUpPerson].filter(Boolean));
       const available = OCCUPIED_RESIDENTS.filter(r => !taken.has(r));
-      // 3. Assign general areas from remaining pool (8 people, 7 areas = very even)
+      // 3. Assign general areas from remaining pool
       let idx = 0;
-      sharedAreas.forEach(a => {
+      active.forEach(a => {
         if (a.bathPool) return;
         o[a.id] = available[(rs.sharedStartIndex + idx) % available.length];
         idx++;
@@ -415,7 +442,9 @@ const sharedAreas = [
     function allTaskDefinitions(rs) {
       const defs=[], ta=getTrashAssignments(rs);
       DAYS.forEach((day,i)=>{ const dd=getDayDate(i); defs.push({id:`trash_${i}`,section:"🗑️ Trash",task:"Take trash to bins",assignedTo:ta[i],day,date:dd,dateStr:shortDate(dd)}); });
-      const sa=getSharedAssignments(rs); sharedAreas.forEach(area=>{ area.tasks.forEach((task,i)=>{ defs.push({id:`shared_${area.id}_${i}`,section:area.name,task,assignedTo:sa[area.id],day:"This week",date:null,dateStr:"anytime this week"}); }); });
+      const sa=getSharedAssignments(rs);
+      const wn=getWeekNumber(), active=getActiveAreas(wn);
+      active.forEach(area=>{ area.tasks.forEach((task,i)=>{ defs.push({id:`shared_${area.id}_${i}`,section:area.name,task,assignedTo:sa[area.id],day:"This week",date:null,dateStr:"anytime this week"}); }); });
       return defs;
     }
 
@@ -527,7 +556,8 @@ const sharedAreas = [
       const assignments=getSharedAssignments(rs);
       const ws=getWeekStartSunday(),we=new Date(ws); we.setDate(ws.getDate()+6);
       const weekLabel=`${shortDate(ws)} – ${shortDate(we)}`;
-      sharedAreas.forEach(area=>{
+      const wn=getWeekNumber(), active=getActiveAreas(wn);
+      active.forEach(area=>{
         const assigned=assignments[area.id];
         const mine=selectedPerson&&isAssignedToPerson(assigned,selectedPerson);
         const faded=selectedPerson&&!mine;
