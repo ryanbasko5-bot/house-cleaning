@@ -311,7 +311,8 @@
 <body>
   <div class="shell">
     <section class="hero">
-      <h1>House Cleaning Schedule</h1>
+      <h1>10 Glenfield Street — Cleaning Schedule</h1>
+      <div class="meta" id="todayDate"></div>
       <div class="meta" id="weekRange">Week</div>
       <div class="meta" id="rotationMeta">Rotation</div>
 
@@ -330,7 +331,7 @@
     </section>
 
     <div class="notice" id="emailNotice">
-      Email report requires EmailJS setup (public key, service ID, template ID). It can then auto-send on Sunday night and manual send anytime.
+      ✅ Weekly email report is configured and will auto-send to <strong>ryanbaskerville09@hotmail.com</strong> every Sunday night at 8 pm. You can also send it manually anytime using the button above.
     </div>
 
     <h2 class="section-title">Daily Trash Duty</h2>
@@ -346,7 +347,8 @@
     <section class="grid" id="sharedGrid"></section>
 
     <div class="footer-note">
-      Weekly reset day: Sunday. Trash bins must be put out Wednesday night. Bin collection day: Thursday.
+      Weekly reset day: Sunday &nbsp;·&nbsp; Bins out Wednesday night &nbsp;·&nbsp; Bin collection Thursday<br>
+      Bookmark this page: <a href="https://ryanbasko5-bot.github.io/house-cleaning/" style="color:#2f7a57;font-weight:600;">ryanbasko5-bot.github.io/house-cleaning</a>
     </div>
   </div>
 
@@ -436,7 +438,7 @@
         id: "u1",
         name: "Bedroom 1",
         occupants: "Vacant",
-        roomTasks: ["No regular task - unoccupied"],
+        roomTasks: [],
         ownBathroomTasks: [],
         vacant: true
       },
@@ -667,11 +669,15 @@
       const rotationState = advanceRotationToCurrentWeek();
       const tasks = loadWeekTasks();
 
+      const now = new Date();
+      document.getElementById("todayDate").textContent =
+        "Today: " + now.toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
       const weekStart = getWeekStartSunday(new Date());
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekStart.getDate() + 6);
-      document.getElementById("weekRange").textContent = `${formatDate(weekStart)} to ${formatDate(weekEnd)}`;
-      document.getElementById("rotationMeta").textContent = `Fair rotation memory: last shared person ${rotationState.lastSharedAssigned || "n/a"}, last trash person ${rotationState.lastTrashAssigned || "n/a"}`;
+      document.getElementById("weekRange").textContent = `Week: ${formatDate(weekStart)} to ${formatDate(weekEnd)}`;
+      document.getElementById("rotationMeta").textContent = `Rotation memory — last shared: ${rotationState.lastSharedAssigned || "n/a"} · last trash: ${rotationState.lastTrashAssigned || "n/a"}`;
 
       renderTrash(rotationState, tasks);
       renderRooms("downstairsGrid", downstairsRooms, tasks);
