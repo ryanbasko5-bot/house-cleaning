@@ -312,9 +312,12 @@
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* ── Leaderboard ── */
-    .leaderboard {
-      margin-top: 14px; background: white; border-radius: var(--radius);
-      padding: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    .leaderboard-section {
+      margin-top: 14px;
+      background: white;
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
     }
     .lb-title { font-weight: 800; font-size: 0.95rem; margin-bottom: 10px; }
     .lb-row {
@@ -883,8 +886,7 @@ const sharedAreas = [
           return { name, done, total, pct };
         }).sort((a, b) => b.pct - a.pct || b.done - a.done);
         const medals = ["👑", "🥈", "🥉"];
-        html += `<div class="leaderboard">`;
-        html += `<div class="lb-title">🏆 Weekly Leaderboard</div>`;
+        html += `<div class="lb-title" style="margin-top:10px">🏆 Weekly Leaderboard</div>`;
         scores.forEach((s, i) => {
           const pos = i < 3 ? medals[i] : `${i + 1}.`;
           const rank = getRankTitle(s.pct);
@@ -895,7 +897,6 @@ const sharedAreas = [
             <div class="lb-pct">${s.pct}%</div>
           </div>`;
         });
-        html += `</div>`;
       }
       section.innerHTML = html;
     }
