@@ -315,15 +315,19 @@
     const EMAILJS_DEFAULT_CONFIG = { service: "service_d9nq37p", template: "template_hdzyvit", key: "8xDuvCoPapEkbrVqU" };
 
     const OCCUPIED_RESIDENTS = ["Makayla","Henry","Maeve","Megan","Ryan","Diago","Astrid","Rohain","Svetlana","Ziyue"];
-    // People with their own bathroom — excluded from shared bathroom rotation
-    const OWN_BATHROOM = ["Henry","Maeve","Rohain","Svetlana"];
-    const BATHROOM_ELIGIBLE = OCCUPIED_RESIDENTS.filter(r => !OWN_BATHROOM.includes(r));
+    // Bathroom pools — only people who USE a shared bathroom clean it
+    const DOWNSTAIRS_BATH_USERS = ["Makayla","Megan","Ryan"];       // Bedrooms 1,3,4 downstairs
+    const UPSTAIRS_BATH_USERS   = ["Diago","Astrid"];                 // Bedrooms 1(vacant)&2 upstairs — only Diago & Astrid
+    // Own bathroom (not assigned any shared bathroom): Henry & Maeve, Rohain & Svetlana, Ziyue
     const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 
 const sharedAreas = [
-      { id:"sa_bath_down", name:"🚿 Downstairs Bathroom", isBathroom:true, tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
-      { id:"sa_bath_up",   name:"🚿 Upstairs Bathroom",   isBathroom:true, tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
-      { id:"sa_kitchen",   name:"🍳 Kitchen",             tasks:["Wipe benches & clean sink","Clean stovetop & appliance fronts","Sweep & mop kitchen floor","Empty & reline bins"] },
+      // Bathrooms — restricted pools (only users of that bathroom)
+      { id:"sa_bath_down", name:"🚿 Downstairs Bathroom", bathPool:"down", tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
+      { id:"sa_bath_up",   name:"🚿 Upstairs Bathroom",   bathPool:"up",   tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
+      // General areas — rotate among ALL 10 residents (split kitchen = 7 slots for fairer spread)
+      { id:"sa_kitchen_a", name:"🍳 Kitchen – Surfaces",  tasks:["Wipe benches & clean sink","Clean stovetop & appliance fronts","Wipe splashback & rangehood"] },
+      { id:"sa_kitchen_b", name:"🍳 Kitchen – Floors & Bins", tasks:["Sweep & mop kitchen floor","Empty & reline all bins","Wipe cupboard fronts"] },
       { id:"sa_laundry",   name:"🧺 Laundry Room",        tasks:["Wipe machines & surfaces","Clean laundry sink","Sweep & mop floor"] },
       { id:"sa_ver_down",  name:"🌿 Downstairs Veranda",  tasks:["Sweep veranda floor","Mop veranda floor","Wipe down furniture","Tidy shoes & items"] },
       { id:"sa_ver_up",    name:"🌿 Upstairs Veranda",    tasks:["Sweep veranda floor","Mop veranda floor","Wipe down furniture","Tidy items"] },
@@ -354,15 +358,21 @@ const sharedAreas = [
     function initializeDefaultEmailConfig() { saveJSON("emailjs_config_v1",getEmailConfig()); }
 
     function getRotationState() {
-      return loadJSON("rotationState_v3",{ version:3, anchorWeekKey:getCurrentWeekKey(), sharedStartIndex:0, trashStartIndex:0, bathStartIndex:0, lastSharedAssigned:null, lastTrashAssigned:null });
+      return loadJSON("rotationState_v4",{ version:4, anchorWeekKey:getCurrentWeekKey(), sharedStartIndex:0, trashStartIndex:0, bathDownIndex:0, bathUpIndex:0 });
     }
-    function saveRotationState(s) { saveJSON("rotationState_v3",s); }
+    function saveRotationState(s) { saveJSON("rotationState_v4",s); }
 
     function advanceRotationToCurrentWeek() {
       const s=getRotationState(), cur=getCurrentWeekKey(), jumps=weeksBetween(s.anchorWeekKey,cur);
-      const bathCount = sharedAreas.filter(a=>a.isBathroom).length;
-      const nonBathCount = sharedAreas.length - bathCount;
-      if(jumps>0){ const n=OCCUPIED_RESIDENTS.length; s.sharedStartIndex=(s.sharedStartIndex+nonBathCount*jumps)%n; s.trashStartIndex=(s.trashStartIndex+DAYS.length*jumps)%n; s.bathStartIndex=((s.bathStartIndex||0)+bathCount*jumps)%BATHROOM_ELIGIBLE.length; s.anchorWeekKey=cur; }
+      const nonBathCount = sharedAreas.filter(a=>!a.bathPool).length;
+      if(jumps>0){
+        const n=OCCUPIED_RESIDENTS.length;
+        s.sharedStartIndex=(s.sharedStartIndex+nonBathCount*jumps)%n;
+        s.trashStartIndex=(s.trashStartIndex+DAYS.length*jumps)%n;
+        s.bathDownIndex=(s.bathDownIndex+jumps)%DOWNSTAIRS_BATH_USERS.length;
+        s.bathUpIndex=(s.bathUpIndex+jumps)%UPSTAIRS_BATH_USERS.length;
+        s.anchorWeekKey=cur;
+      }
       saveRotationState(s); return s;
     }
 
@@ -383,9 +393,10 @@ const sharedAreas = [
 
     /* ── Assignments ── */
     function getSharedAssignments(rs) {
-      const o={}; let bathIdx=0, nonBathIdx=0;
+      const o={}; let nonBathIdx=0;
       sharedAreas.forEach(a=>{
-        if(a.isBathroom) { o[a.id]=BATHROOM_ELIGIBLE[((rs.bathStartIndex||0)+bathIdx)%BATHROOM_ELIGIBLE.length]; bathIdx++; }
+        if(a.bathPool==="down") { o[a.id]=DOWNSTAIRS_BATH_USERS[rs.bathDownIndex%DOWNSTAIRS_BATH_USERS.length]; }
+        else if(a.bathPool==="up") { o[a.id]=UPSTAIRS_BATH_USERS[rs.bathUpIndex%UPSTAIRS_BATH_USERS.length]; }
         else { o[a.id]=OCCUPIED_RESIDENTS[(rs.sharedStartIndex+nonBathIdx)%OCCUPIED_RESIDENTS.length]; nonBathIdx++; }
       });
       return o;
