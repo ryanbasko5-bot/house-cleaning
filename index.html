@@ -615,6 +615,15 @@ const sharedAreas = [
     function getStreakKey() { return `streak_v1`; }
     function loadStreaks() { return loadJSON(getStreakKey(), {}); }
     function saveStreaks(s) { saveJSON(getStreakKey(), s); }
+
+    /* ── All-time totals ── */
+    function loadAllTime() { return loadJSON('alltime_v1', {}); }
+    function saveAllTime(d) { saveJSON('alltime_v1', d); }
+    function recordAllTime(personName, delta) {
+      const d = loadAllTime();
+      d[personName] = Math.max(0, (d[personName] || 0) + delta);
+      saveAllTime(d);
+    }
     function recordWeekCompletion(personName, allDone) {
       const streaks = loadStreaks();
       const wk = getCurrentWeekKey();
@@ -876,25 +885,22 @@ const sharedAreas = [
       const isOpen = loadJSON("leaderboard_panel_open", false);
       let html = `<div class="hol-head" onclick="toggleLeaderboardPanel()"><h3>🏆 Leaderboard</h3><span class="hol-arrow${isOpen?" open":""}">▼</span></div>`;
       if (isOpen) {
-        const defs = allTaskDefinitions(rs);
-        const awaySet = new Set(getAwayResidents());
-        const scores = OCCUPIED_RESIDENTS.filter(r => !awaySet.has(r)).map(name => {
-          const my = defs.filter(d => isAssignedToPerson(d.assignedTo, name));
-          const done = my.filter(d => tasks[d.id]).length;
-          const total = my.length;
-          const pct = total ? Math.round(done / total * 100) : 0;
-          return { name, done, total, pct };
-        }).sort((a, b) => b.pct - a.pct || b.done - a.done);
+        const allTime = loadAllTime();
+        const scores = OCCUPIED_RESIDENTS.map(name => ({
+          name,
+          total: allTime[name] || 0
+        })).sort((a, b) => b.total - a.total);
+        const max = scores[0]?.total || 1;
         const medals = ["👑", "🥈", "🥉"];
-        html += `<div class="lb-title" style="margin-top:10px">🏆 Weekly Leaderboard</div>`;
         scores.forEach((s, i) => {
           const pos = i < 3 ? medals[i] : `${i + 1}.`;
-          const rank = getRankTitle(s.pct);
+          const pct = Math.round(s.total / max * 100);
+          const rank = getRankTitle(pct);
           html += `<div class="lb-row">
             <div class="lb-pos">${pos}</div>
             <div class="lb-name">${escapeHtml(s.name)}<div class="lb-rank">${rank}</div></div>
-            <div class="lb-bar-wrap"><div class="lb-bar" style="width:${s.pct}%"></div></div>
-            <div class="lb-pct">${s.pct}%</div>
+            <div class="lb-bar-wrap"><div class="lb-bar" style="width:${pct}%"></div></div>
+            <div class="lb-pct">${s.total}</div>
           </div>`;
         });
       }
@@ -955,6 +961,14 @@ const sharedAreas = [
       const dd=loadDoneDates();
       if(input.checked){ dd[id]=new Date().toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short"}); } else { delete dd[id]; }
       saveDoneDates(dd);
+      // Update all-time totals
+      const rsNow=advanceRotationToCurrentWeek();
+      const defsNow=allTaskDefinitions(rsNow);
+      const taskDef=defsNow.find(d=>d.id===id);
+      if(taskDef && taskDef.assignedTo) {
+        // assignedTo may be "Person A & Person B" — credit each
+        taskDef.assignedTo.split(/\s*&\s*|\s+and\s+/i).map(n=>n.trim()).filter(Boolean).forEach(n=>recordAllTime(n, input.checked?1:-1));
+      }
       document.querySelectorAll(`input[data-task-id="${CSS.escape(id)}"]`).forEach(cb=>{
         cb.checked=input.checked;
         const row=cb.closest(".task-row,.your-task-item");
