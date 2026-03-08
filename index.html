@@ -10,10 +10,9 @@
       --muted: #6c7a89;
       --line: #e0e4ea;
       --purple: #7c6ee6;
-      --pink: #ff7a7a;
-      --green: #4ecdc4;
-      --amber: #ffb86b;
-      --danger: #ff5e5b;
+      --blue: #60aee0;
+      --teal: #4ecdc4;
+      --danger: #e05c6e;
       --radius: 16px;
     }
 
@@ -21,7 +20,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: linear-gradient(160deg, #e0e7ff 0%, #c7ffd8 45%, #ffe0e6 100%);
+      background: linear-gradient(160deg, #eaf0ff 0%, #d6f5f5 45%, #f0f0fc 100%);
       min-height: 100vh;
       color: var(--ink);
       -webkit-text-size-adjust: 100%;
@@ -35,7 +34,7 @@
 
     /* ── Hero ── */
     .hero {
-      background: linear-gradient(135deg, #4ecdc4 0%, #ffb86b 55%, #ff7a7a 100%);
+      background: linear-gradient(135deg, #60aee0 0%, #7c6ee6 55%, #4ecdc4 100%);
       color: white;
       border-radius: 22px;
       padding: 18px 16px;
@@ -48,7 +47,7 @@
 
     .progress { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
     .progress-track { flex: 1; height: 10px; background: rgba(255,255,255,0.22); border-radius: 999px; overflow: hidden; }
-    .progress-fill { width: 0; height: 100%; background: linear-gradient(90deg, #7c6ee6, #4ecdc4, #ffb86b); border-radius: 999px; transition: width 300ms; }
+    .progress-fill { width: 0; height: 100%; background: linear-gradient(90deg, #7c6ee6, #60aee0, #4ecdc4); border-radius: 999px; transition: width 300ms; }
     #progressText { font-size: 0.78rem; color: rgba(255,255,255,0.9); font-weight: 700; white-space: nowrap; }
 
 
@@ -103,7 +102,7 @@
     /* ── Your tasks banner ── */
     .your-tasks {
       margin-top: 14px;
-      background: linear-gradient(135deg, #4ecdc4, #7c6ee6);
+      background: linear-gradient(135deg, #60aee0, #7c6ee6);
       color: white;
       border-radius: var(--radius);
       padding: 16px;
@@ -219,7 +218,7 @@
       transition: transform 0.1s;
     }
     button:active { transform: scale(0.95); }
-    .btn-primary { background: linear-gradient(135deg, #7c6ee6, #4ecdc4); color: white; box-shadow: 0 4px 14px rgba(76,205,196,0.25); }
+    .btn-primary { background: linear-gradient(135deg, #7c6ee6, #60aee0); color: white; box-shadow: 0 4px 14px rgba(124,110,230,0.2); }
 
     /* ── Footer ── */
     .footer-note {
@@ -327,7 +326,7 @@
     .lb-name { font-weight: 700; flex: 1; }
     .lb-rank { font-size: 0.72rem; color: var(--muted); }
     .lb-bar-wrap { width: 60px; height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
-    .lb-bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--purple), var(--green)); transition: width 0.3s; }
+    .lb-bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--purple), var(--blue)); transition: width 0.3s; }
     .lb-pct { font-weight: 800; font-size: 0.78rem; width: 36px; text-align: right; }
 
     /* ── Streak ── */
