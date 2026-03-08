@@ -6,14 +6,14 @@
   <title>House Cleaning Schedule</title>
   <style>
     :root {
-      --ink: #1e0a3c;
-      --muted: #6b7280;
-      --line: #e5e7eb;
-      --purple: #7c3aed;
-      --pink: #db2777;
-      --green: #059669;
-      --amber: #d97706;
-      --danger: #dc2626;
+      --ink: #22304a;
+      --muted: #6c7a89;
+      --line: #e0e4ea;
+      --purple: #7c6ee6;
+      --pink: #ff7a7a;
+      --green: #4ecdc4;
+      --amber: #ffb86b;
+      --danger: #ff5e5b;
       --radius: 16px;
     }
 
@@ -21,7 +21,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: linear-gradient(160deg, #fdf4ff 0%, #fce7f3 45%, #e0f2fe 100%);
+      background: linear-gradient(160deg, #e0e7ff 0%, #c7ffd8 45%, #ffe0e6 100%);
       min-height: 100vh;
       color: var(--ink);
       -webkit-text-size-adjust: 100%;
@@ -35,7 +35,7 @@
 
     /* ── Hero ── */
     .hero {
-      background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 55%, #be185d 100%);
+      background: linear-gradient(135deg, #22304a 0%, #7c6ee6 55%, #ff7a7a 100%);
       color: white;
       border-radius: 22px;
       padding: 18px 16px;
@@ -48,7 +48,7 @@
 
     .progress { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
     .progress-track { flex: 1; height: 10px; background: rgba(255,255,255,0.22); border-radius: 999px; overflow: hidden; }
-    .progress-fill { width: 0; height: 100%; background: linear-gradient(90deg, #a78bfa, #f0abfc, #86efac); border-radius: 999px; transition: width 300ms; }
+    .progress-fill { width: 0; height: 100%; background: linear-gradient(90deg, #7c6ee6, #4ecdc4, #ffb86b); border-radius: 999px; transition: width 300ms; }
     #progressText { font-size: 0.78rem; color: rgba(255,255,255,0.9); font-weight: 700; white-space: nowrap; }
 
 
@@ -103,7 +103,7 @@
     /* ── Your tasks banner ── */
     .your-tasks {
       margin-top: 14px;
-      background: linear-gradient(135deg, #059669, #10b981);
+      background: linear-gradient(135deg, #4ecdc4, #7c6ee6);
       color: white;
       border-radius: var(--radius);
       padding: 16px;
@@ -219,7 +219,7 @@
       transition: transform 0.1s;
     }
     button:active { transform: scale(0.95); }
-    .btn-primary { background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; box-shadow: 0 4px 14px rgba(124,58,237,0.35); }
+    .btn-primary { background: linear-gradient(135deg, #7c6ee6, #4ecdc4); color: white; box-shadow: 0 4px 14px rgba(76,205,196,0.25); }
 
     /* ── Footer ── */
     .footer-note {
@@ -327,7 +327,7 @@
     .lb-name { font-weight: 700; flex: 1; }
     .lb-rank { font-size: 0.72rem; color: var(--muted); }
     .lb-bar-wrap { width: 60px; height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
-    .lb-bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--purple), var(--pink)); transition: width 0.3s; }
+    .lb-bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--purple), var(--green)); transition: width 0.3s; }
     .lb-pct { font-weight: 800; font-size: 0.78rem; width: 36px; text-align: right; }
 
     /* ── Streak ── */
