@@ -300,11 +300,14 @@
     const EMAILJS_DEFAULT_CONFIG = { service: "service_d9nq37p", template: "template_hdzyvit", key: "8xDuvCoPapEkbrVqU" };
 
     const OCCUPIED_RESIDENTS = ["Makayla","Henry","Maeve","Megan","Ryan","Diago","Astrid","Rohain","Svetlana","Ziyue"];
+    // People with their own bathroom — excluded from shared bathroom rotation
+    const OWN_BATHROOM = ["Henry","Maeve","Rohain","Svetlana"];
+    const BATHROOM_ELIGIBLE = OCCUPIED_RESIDENTS.filter(r => !OWN_BATHROOM.includes(r));
     const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 
 const sharedAreas = [
-      { id:"sa_bath_down", name:"🚿 Downstairs Bathroom", tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
-      { id:"sa_bath_up",   name:"🚿 Upstairs Bathroom",   tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
+      { id:"sa_bath_down", name:"🚿 Downstairs Bathroom", isBathroom:true, tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
+      { id:"sa_bath_up",   name:"🚿 Upstairs Bathroom",   isBathroom:true, tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
       { id:"sa_kitchen",   name:"🍳 Kitchen",             tasks:["Wipe benches & clean sink","Clean stovetop & appliance fronts","Sweep & mop kitchen floor","Empty & reline bins"] },
       { id:"sa_laundry",   name:"🧺 Laundry Room",        tasks:["Wipe machines & surfaces","Clean laundry sink","Sweep & mop floor"] },
       { id:"sa_ver_down",  name:"🌿 Downstairs Veranda",  tasks:["Sweep veranda floor","Mop veranda floor","Wipe down furniture","Tidy shoes & items"] },
@@ -336,15 +339,15 @@ const sharedAreas = [
     function initializeDefaultEmailConfig() { saveJSON("emailjs_config_v1",getEmailConfig()); }
 
     function getRotationState() {
-      return loadJSON("rotationState_v2",{ version:2, anchorWeekKey:getCurrentWeekKey(), sharedStartIndex:0, trashStartIndex:0, lastSharedAssigned:null, lastTrashAssigned:null });
+      return loadJSON("rotationState_v3",{ version:3, anchorWeekKey:getCurrentWeekKey(), sharedStartIndex:0, trashStartIndex:0, bathStartIndex:0, lastSharedAssigned:null, lastTrashAssigned:null });
     }
-    function saveRotationState(s) { saveJSON("rotationState_v2",s); }
+    function saveRotationState(s) { saveJSON("rotationState_v3",s); }
 
     function advanceRotationToCurrentWeek() {
       const s=getRotationState(), cur=getCurrentWeekKey(), jumps=weeksBetween(s.anchorWeekKey,cur);
-      if(jumps>0){ const n=OCCUPIED_RESIDENTS.length; s.sharedStartIndex=(s.sharedStartIndex+sharedAreas.length*jumps)%n; s.trashStartIndex=(s.trashStartIndex+DAYS.length*jumps)%n; s.anchorWeekKey=cur; }
-      const cs=[]; for(let i=0;i<sharedAreas.length;i++) cs.push(OCCUPIED_RESIDENTS[(s.sharedStartIndex+i)%OCCUPIED_RESIDENTS.length]); s.lastSharedAssigned=cs[cs.length-1];
-      const ct=[]; for(let d=0;d<DAYS.length;d++) ct.push(OCCUPIED_RESIDENTS[(s.trashStartIndex+d)%OCCUPIED_RESIDENTS.length]); s.lastTrashAssigned=ct[ct.length-1];
+      const bathCount = sharedAreas.filter(a=>a.isBathroom).length;
+      const nonBathCount = sharedAreas.length - bathCount;
+      if(jumps>0){ const n=OCCUPIED_RESIDENTS.length; s.sharedStartIndex=(s.sharedStartIndex+nonBathCount*jumps)%n; s.trashStartIndex=(s.trashStartIndex+DAYS.length*jumps)%n; s.bathStartIndex=((s.bathStartIndex||0)+bathCount*jumps)%BATHROOM_ELIGIBLE.length; s.anchorWeekKey=cur; }
       saveRotationState(s); return s;
     }
 
@@ -354,7 +357,14 @@ const sharedAreas = [
     function maybeCleanupOldTaskKeys() { const ks=Object.keys(localStorage).filter(k=>k.startsWith("tasks_")).sort(); if(ks.length>12) ks.slice(0,ks.length-12).forEach(k=>localStorage.removeItem(k)); }
 
     /* ── Assignments ── */
-    function getSharedAssignments(rs) { const o={}; sharedAreas.forEach((a,i)=>{o[a.id]=OCCUPIED_RESIDENTS[(rs.sharedStartIndex+i)%OCCUPIED_RESIDENTS.length];}); return o; }
+    function getSharedAssignments(rs) {
+      const o={}; let bathIdx=0, nonBathIdx=0;
+      sharedAreas.forEach(a=>{
+        if(a.isBathroom) { o[a.id]=BATHROOM_ELIGIBLE[((rs.bathStartIndex||0)+bathIdx)%BATHROOM_ELIGIBLE.length]; bathIdx++; }
+        else { o[a.id]=OCCUPIED_RESIDENTS[(rs.sharedStartIndex+nonBathIdx)%OCCUPIED_RESIDENTS.length]; nonBathIdx++; }
+      });
+      return o;
+    }
     function getTrashAssignments(rs) { return DAYS.map((_,i)=>OCCUPIED_RESIDENTS[(rs.trashStartIndex+i)%OCCUPIED_RESIDENTS.length]); }
 
     function allTaskDefinitions(rs) {
