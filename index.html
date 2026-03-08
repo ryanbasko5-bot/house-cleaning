@@ -2,83 +2,78 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>House Cleaning Schedule</title>
   <style>
     :root {
-      --bg: #f6f2ea;
-      --panel: #fffdf9;
-      --ink: #222222;
-      --muted: #6f6a61;
-      --line: #ddd4c7;
-      --accent: #2f7a57;
-      --accent-2: #bf5f3c;
-      --accent-3: #c1a246;
-      --danger: #b21e35;
+      --ink: #1e0a3c;
+      --muted: #6b7280;
+      --line: #e9d5ff;
+      --purple: #7c3aed;
+      --pink: #db2777;
+      --green: #059669;
+      --amber: #d97706;
+      --danger: #dc2626;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      margin: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 10% 20%, #e6efe8 0, transparent 45%),
-        radial-gradient(circle at 85% 0%, #f7e9e1 0, transparent 40%),
-        var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(160deg, #fdf4ff 0%, #fce7f3 45%, #e0f2fe 100%);
       min-height: 100vh;
+      color: var(--ink);
     }
 
     .shell {
-      max-width: 1200px;
+      max-width: 600px;
       margin: 0 auto;
-      padding: 24px 16px 40px;
+      padding: 14px 12px 80px;
     }
 
+    /* Hero */
     .hero {
-      background: linear-gradient(135deg, #202623, #2f3a33);
-      color: #f7f4ef;
-      border-radius: 18px;
-      padding: 22px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+      background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 55%, #be185d 100%);
+      color: white;
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: 0 10px 40px rgba(124,58,237,0.38);
     }
 
     .hero h1 {
-      margin: 0;
-      font-size: clamp(1.6rem, 4vw, 2.5rem);
-      letter-spacing: 0.02em;
+      font-size: clamp(1.2rem, 5vw, 1.7rem);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+
+    .hero .subtitle {
+      font-size: 0.82rem;
+      opacity: 0.8;
+      font-weight: 600;
+      margin-top: 2px;
     }
 
     .hero .meta {
-      margin-top: 8px;
-      color: #c7d6cc;
-      font-size: 0.95rem;
+      margin-top: 5px;
+      color: rgba(255,255,255,0.82);
+      font-size: 0.82rem;
     }
 
+    /* Toolbar */
     .toolbar {
       margin-top: 14px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    .progress {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 220px;
-      flex: 1;
-    }
+    .progress { display: flex; align-items: center; gap: 10px; }
 
     .progress-track {
       flex: 1;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.22);
+      height: 10px;
+      background: rgba(255,255,255,0.25);
       border-radius: 999px;
       overflow: hidden;
     }
@@ -86,232 +81,228 @@
     .progress-fill {
       width: 0;
       height: 100%;
-      background: linear-gradient(90deg, #79c79c, #bde6ca);
-      transition: width 200ms ease;
+      background: linear-gradient(90deg, #a78bfa, #f0abfc, #86efac);
+      transition: width 300ms ease;
+      border-radius: 999px;
     }
 
-    .btns {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+    #progressText {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.9);
+      font-weight: 700;
+      white-space: nowrap;
     }
+
+    .btns { display: flex; gap: 8px; }
 
     button {
-      border: 1px solid transparent;
-      background: #f7f4ef;
-      color: #202623;
-      border-radius: 9px;
-      padding: 8px 12px;
-      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-weight: 700;
       cursor: pointer;
+      font-size: 0.88rem;
+      min-height: 44px;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.1s, opacity 0.1s;
     }
 
-    button:hover {
-      transform: translateY(-1px);
+    button:active { transform: scale(0.95); opacity: 0.85; }
+
+    .btn-email {
+      background: rgba(255,255,255,0.18);
+      color: white;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      flex: 1;
     }
 
     .btn-primary {
-      background: #2f7a57;
+      background: linear-gradient(135deg, #059669, #10b981);
       color: white;
+      box-shadow: 0 4px 14px rgba(5,150,105,0.4);
+      flex: 1;
     }
 
     .btn-danger {
-      background: #7a2222;
-      color: white;
+      background: transparent;
+      color: rgba(255,255,255,0.62);
+      border: 1.5px solid rgba(255,255,255,0.28);
+      font-size: 0.77rem;
+      padding: 8px 10px;
+      min-height: 36px;
     }
 
-    .grid {
-      margin-top: 18px;
-      display: grid;
-      gap: 16px;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 14px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-    }
-
-    .panel h2 {
-      margin: 0 0 10px;
-      font-size: 1.1rem;
-    }
-
+    /* Section headings */
     .section-title {
-      margin: 28px 0 10px;
-      font-size: 1.35rem;
-      border-bottom: 2px solid var(--line);
-      padding-bottom: 7px;
+      margin: 22px 0 10px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--ink);
     }
 
-    .room-card,
-    .area-card,
-    .day-card {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px;
-      background: #fff;
+    /* Grid */
+    .grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr;
     }
 
-    .room-head,
-    .area-head,
-    .day-head {
+    .grid.two-col { grid-template-columns: 1fr 1fr; }
+
+    @media (min-width: 520px) {
+      .grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    }
+
+    /* Cards */
+    .room-card, .area-card, .day-card {
+      background: white;
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    .room-card { border-top: 4px solid var(--purple); }
+    .area-card { border-top: 4px solid var(--pink); }
+    .day-card  { border-top: 4px solid var(--amber); }
+    .day-card.today {
+      border-top: 4px solid var(--green);
+      box-shadow: 0 4px 20px rgba(5,150,105,0.22);
+    }
+
+    .room-head, .area-head, .day-head {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 8px;
     }
 
-    .name {
-      font-weight: 700;
-    }
-
-    .muted {
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
+    .name { font-weight: 800; font-size: 0.97rem; }
+    .muted { color: var(--muted); font-size: 0.82rem; }
 
     .pill {
       display: inline-block;
-      font-size: 0.75rem;
-      padding: 2px 7px;
+      font-size: 0.72rem;
+      padding: 3px 8px;
       border-radius: 999px;
-      border: 1px solid var(--line);
-      color: var(--muted);
+      background: #f3e8ff;
+      color: var(--purple);
+      font-weight: 700;
+      white-space: nowrap;
     }
 
-    .pill.warn {
-      border-color: #e2c784;
-      color: #7a5d1e;
-      background: #fff7e2;
-    }
+    .pill.warn { background: #fff7ed; color: #c2410c; }
+    .pill.green { background: #d1fae5; color: #065f46; }
 
-    .day-card.today {
-      border-color: #93c5aa;
-      box-shadow: inset 0 0 0 1px #93c5aa;
-    }
-
-    .task-list {
-      margin-top: 8px;
-      display: grid;
-      gap: 4px;
-    }
+    /* Tasks */
+    .task-list { display: grid; gap: 1px; margin-top: 4px; }
 
     .task-row {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 4px 2px;
-      border-radius: 6px;
+      gap: 10px;
+      padding: 8px 4px;
+      border-radius: 10px;
+      cursor: pointer;
+      min-height: 40px;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .task-row:hover {
-      background: #f6fbf8;
-    }
+    .task-row:active { background: #faf5ff; }
 
     .task-row.done .label {
       text-decoration: line-through;
       color: var(--muted);
+      opacity: 0.75;
     }
 
     input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--accent);
+      width: 22px;
+      height: 22px;
+      accent-color: var(--purple);
       cursor: pointer;
+      flex-shrink: 0;
     }
 
+    .label { font-size: 0.88rem; line-height: 1.3; }
+
+    /* Notice */
+    .notice {
+      margin: 12px 0;
+      background: #f0fdf4;
+      border: 1.5px solid #86efac;
+      border-radius: 14px;
+      padding: 11px 14px;
+      font-size: 0.88rem;
+      color: #14532d;
+    }
+
+    .notice.hidden { display: none; }
+
+    /* Footer */
     .footer-note {
-      margin-top: 14px;
+      margin-top: 18px;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.8rem;
+      text-align: center;
+      line-height: 1.7;
     }
 
+    /* Modal — slides up from bottom on mobile */
     .modal {
       position: fixed;
       inset: 0;
       display: none;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 16px;
+      background: rgba(0,0,0,0.55);
       z-index: 20;
     }
 
-    .modal.open {
-      display: flex;
-    }
+    .modal.open { display: flex; }
 
     .card {
-      max-width: 560px;
       width: 100%;
-      background: #fff;
-      border-radius: 12px;
-      padding: 16px;
-      border: 1px solid var(--line);
+      max-width: 600px;
+      background: white;
+      border-radius: 24px 24px 0 0;
+      padding: 22px 20px 36px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
-    .card h3 {
-      margin: 0 0 8px;
+    @media (min-width: 600px) {
+      .modal { align-items: center; padding: 16px; }
+      .card { border-radius: 20px; padding: 22px; }
     }
 
-    .field {
-      display: grid;
-      gap: 4px;
-      margin-bottom: 10px;
-    }
+    .card h3 { margin: 0 0 14px; font-size: 1.1rem; font-weight: 800; }
 
-    .field label {
-      font-size: 0.86rem;
-      color: var(--muted);
-    }
+    .field { display: grid; gap: 5px; margin-bottom: 12px; }
+    .field label { font-size: 0.83rem; color: var(--muted); font-weight: 600; }
 
     .field input {
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid var(--line);
-      width: 100%;
-    }
-
-    .row {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
-
-    .notice {
-      margin-top: 12px;
-      background: #fff8df;
-      border: 1px solid #e7d29c;
+      padding: 11px 12px;
       border-radius: 10px;
-      padding: 10px;
-      font-size: 0.9rem;
+      border: 1.5px solid var(--line);
+      width: 100%;
+      font-size: 0.95rem;
     }
 
-    .notice.hidden {
-      display: none;
-    }
+    .field input:focus { outline: none; border-color: var(--purple); }
 
-    @media (max-width: 680px) {
-      .toolbar {
-        flex-direction: column;
-        align-items: stretch;
-      }
+    .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
 
-      .btns {
-        justify-content: flex-start;
-      }
+    @supports (padding: max(0px)) {
+      .shell { padding-bottom: max(80px, calc(60px + env(safe-area-inset-bottom))); }
     }
   </style>
 </head>
 <body>
   <div class="shell">
     <section class="hero">
-      <h1>10 Glenfield Street — Cleaning Schedule</h1>
+      <h1>🏡 10 Glenfield Street</h1>
+      <div class="subtitle">Cleaning Schedule ✨</div>
       <div class="meta" id="todayDate"></div>
       <div class="meta" id="weekRange">Week</div>
       <div class="meta" id="rotationMeta">Rotation</div>
@@ -323,9 +314,7 @@
         </div>
 
         <div class="btns">
-          <button onclick="openEmailSetup()">Email setup</button>
-          <button class="btn-primary" onclick="sendWeeklyReport()">Send weekly report</button>
-          <button class="btn-danger" onclick="resetCurrentWeek()">Reset this week</button>
+          <button class="btn-primary" onclick="sendWeeklyReport()">📊 Send report</button>
         </div>
       </div>
     </section>
@@ -334,16 +323,16 @@
       ✅ Weekly email report is configured and will auto-send to <strong>ryanbaskerville09@hotmail.com</strong> every Sunday night at 8 pm. You can also send it manually anytime using the button above.
     </div>
 
-    <h2 class="section-title">Daily Trash Duty</h2>
-    <section class="grid" id="trashGrid"></section>
+    <h2 class="section-title">🗑️ Daily Trash Duty</h2>
+    <section class="grid two-col" id="trashGrid"></section>
 
-    <h2 class="section-title">Downstairs Bedrooms</h2>
+    <h2 class="section-title">🛏️ Downstairs Bedrooms</h2>
     <section class="grid" id="downstairsGrid"></section>
 
-    <h2 class="section-title">Upstairs Bedrooms</h2>
+    <h2 class="section-title">🛏️ Upstairs Bedrooms</h2>
     <section class="grid" id="upstairsGrid"></section>
 
-    <h2 class="section-title">Shared Areas (Weekly Rotation)</h2>
+    <h2 class="section-title">🧹 Shared Areas (Weekly Rotation)</h2>
     <section class="grid" id="sharedGrid"></section>
 
     <div class="footer-note">
@@ -621,16 +610,7 @@
         room.roomTasks.forEach((task, i) => {
           defs.push({
             id: `room_${room.id}_${i}`,
-            section: `${room.name} (${room.occupants})`,
-            task,
-            assignedTo: room.occupants
-          });
-        });
-
-        room.ownBathroomTasks.forEach((task, i) => {
-          defs.push({
-            id: `bath_${room.id}_${i}`,
-            section: `${room.name} own bathroom`,
+            section: room.occupants,
             task,
             assignedTo: room.occupants
           });
@@ -711,12 +691,15 @@
         card.className = `day-card${i === todayIndex ? " today" : ""}`;
 
         const note = i === 2 ? "Put bins out tonight" : i === 3 ? "Bin collection day" : "";
+        const badge = (i === 2 || i === 3)
+          ? `<span class="pill warn">${note}</span>`
+          : (i === todayIndex ? `<span class="pill green">Today ✓</span>` : "");
         card.innerHTML = `
           <div class="day-head">
             <div class="name">${day}</div>
-            ${i === 2 || i === 3 ? `<span class="pill warn">${note}</span>` : ""}
+            ${badge}
           </div>
-          <div class="muted">Assigned: ${assignments[i]}</div>
+          <div class="muted">🙋 ${assignments[i]}</div>
           <div class="task-list"></div>
         `;
 
@@ -735,10 +718,10 @@
         const card = document.createElement("article");
         card.className = "room-card";
 
+        const displayName = room.vacant ? "🚧 Vacant" : `👤 ${room.occupants}`;
         card.innerHTML = `
           <div class="room-head">
-            <div class="name">${room.name}</div>
-            <span class="pill">${room.occupants}</span>
+            <div class="name">${displayName}</div>
           </div>
           <div class="task-list"></div>
         `;
@@ -749,23 +732,10 @@
           list.appendChild(renderTaskRow(id, t, Boolean(tasks[id])));
         });
 
-        if (room.ownBathroomTasks.length > 0) {
-          const own = document.createElement("div");
-          own.className = "muted";
-          own.style.marginTop = "6px";
-          own.textContent = "Own bathroom:";
-          list.appendChild(own);
-
-          room.ownBathroomTasks.forEach((t, i) => {
-            const id = `bath_${room.id}_${i}`;
-            list.appendChild(renderTaskRow(id, t, Boolean(tasks[id])));
-          });
-        }
-
         if (room.vacant) {
           const vac = document.createElement("div");
           vac.className = "muted";
-          vac.textContent = "This room is unoccupied and excluded from shared rotation.";
+          vac.textContent = "Unoccupied — excluded from rotation.";
           vac.style.marginTop = "4px";
           list.appendChild(vac);
         }
@@ -784,8 +754,10 @@
         card.className = "area-card";
         card.innerHTML = `
           <div class="area-head">
-            <div class="name">${area.name}</div>
-            <span class="pill">Assigned: ${assignments[area.id]}</span>
+            <div>
+              <div class="name">${area.name}</div>
+              <div class="muted" style="margin-top:3px;">🙋 ${assignments[area.id]}</div>
+            </div>
           </div>
           <div class="task-list"></div>
         `;
