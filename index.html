@@ -354,9 +354,9 @@ const sharedAreas = [
     function initializeDefaultEmailConfig() { saveJSON("emailjs_config_v1",getEmailConfig()); }
 
     function getRotationState() {
-      return loadJSON("rotationState_v4",{ version:4, anchorWeekKey:getCurrentWeekKey(), sharedStartIndex:0, trashStartIndex:0, bathDownIndex:0, bathUpIndex:0 });
+      return loadJSON("rotationState_v5",{ version:5, anchorWeekKey:getCurrentWeekKey(), sharedStartIndex:0, trashStartIndex:5, bathDownIndex:0, bathUpIndex:0 });
     }
-    function saveRotationState(s) { saveJSON("rotationState_v4",s); }
+    function saveRotationState(s) { saveJSON("rotationState_v5",s); }
 
     function advanceRotationToCurrentWeek() {
       const s=getRotationState(), cur=getCurrentWeekKey(), jumps=weeksBetween(s.anchorWeekKey,cur);
