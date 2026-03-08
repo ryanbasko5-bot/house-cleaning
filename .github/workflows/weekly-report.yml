@@ -1,0 +1,248 @@
+name: Weekly Cleaning Report
+
+on:
+  schedule:
+    # Every Sunday at 10:00 UTC = 8:00 PM AEST (Australian Eastern Standard Time)
+    # During daylight saving (Oct–Apr) this fires at 9:00 PM AEDT — still close enough
+    - cron: "0 10 * * 0"
+  workflow_dispatch:
+    # Allows you to trigger a manual send any time from
+    # github.com → Actions → Weekly Cleaning Report → Run workflow
+
+jobs:
+  send-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate and send weekly schedule email
+        run: |
+          node << 'NODEJS_EOF'
+
+          const https = require("https");
+
+          // ── Config ──────────────────────────────────────────────────────────
+          const EMAIL_TARGET   = "ryanbaskerville09@hotmail.com";
+          const EMAILJS_KEY     = "8xDuvCoPapEkbrVqU";
+          const EMAILJS_SERVICE = "service_d9nq37p";
+          const EMAILJS_TEMPLATE = "template_hdzyvit";
+
+          // ── Household data (must match index.html exactly) ──────────────────
+          const OCCUPIED_RESIDENTS = [
+            "Makayla","Henry","Maeve","Megan","Ryan",
+            "Diago","Astrid","Rohain","Svetlana","Ziyue"
+          ];
+
+          const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+
+          const downstairsRooms = [
+            { name:"Bedroom 1", occupants:"Makayla",         ownBath:false },
+            { name:"Bedroom 2", occupants:"Henry and Maeve", ownBath:true  },
+            { name:"Bedroom 3", occupants:"Megan",           ownBath:false },
+            { name:"Bedroom 4", occupants:"Ryan",            ownBath:false }
+          ];
+          const upstairsRooms = [
+            { name:"Bedroom 1", occupants:"Vacant",                ownBath:false, vacant:true },
+            { name:"Bedroom 2", occupants:"Diago and Astrid",       ownBath:false },
+            { name:"Bedroom 3", occupants:"Rohain and Svetlana",    ownBath:true  },
+            { name:"Bedroom 4", occupants:"Ziyue",                  ownBath:false }
+          ];
+
+          const sharedAreas = [
+            { name:"Downstairs shared bathroom", tasks:["Toilet","Sink and mirror","Shower and floor"] },
+            { name:"Upstairs shared bathroom",   tasks:["Toilet","Sink and mirror","Shower and floor"] },
+            { name:"Kitchen",                    tasks:["Benches and sink","Stovetop and fronts","Floor and bins"] },
+            { name:"Laundry room",               tasks:["Wipe machines","Sink and surfaces","Floor"] },
+            { name:"Downstairs veranda",         tasks:["Sweep","Wipe furniture","Tidy items"] },
+            { name:"Upstairs veranda",           tasks:["Sweep","Wipe furniture","Tidy items"] }
+          ];
+
+          // ── Rotation engine (mirrors index.html logic exactly) ──────────────
+          // Anchor = first week the app was launched: 2026-03-08 (Sunday)
+          const ANCHOR_WEEK        = "2026-03-08";
+          const ANCHOR_SHARED_IDX  = 0;
+          const ANCHOR_TRASH_IDX   = 0;
+
+          function getWeekStartSunday(date) {
+            const d = new Date(date);
+            d.setUTCHours(0,0,0,0);
+            d.setUTCDate(d.getUTCDate() - d.getUTCDay());
+            return d;
+          }
+
+          function toDateKey(d) {
+            return d.toISOString().slice(0,10);
+          }
+
+          function weeksBetween(startKey, endKey) {
+            const ms = new Date(endKey+"T00:00:00Z") - new Date(startKey+"T00:00:00Z");
+            return ms <= 0 ? 0 : Math.floor(ms / (7*24*60*60*1000));
+          }
+
+          const now       = new Date();
+          const weekStart = getWeekStartSunday(now);
+          const weekEnd   = new Date(weekStart);
+          weekEnd.setUTCDate(weekStart.getUTCDate() + 6);
+
+          const currentWeekKey = toDateKey(weekStart);
+          const weekJumps      = weeksBetween(ANCHOR_WEEK, currentWeekKey);
+          const n              = OCCUPIED_RESIDENTS.length;
+
+          const sharedIdx = (ANCHOR_SHARED_IDX + sharedAreas.length * weekJumps) % n;
+          const trashIdx  = (ANCHOR_TRASH_IDX  + DAYS.length  * weekJumps) % n;
+
+          const sharedAssignments = sharedAreas.map((area, i) => ({
+            area:   area.name,
+            person: OCCUPIED_RESIDENTS[(sharedIdx + i) % n],
+            tasks:  area.tasks
+          }));
+
+          const trashAssignments = DAYS.map((day, i) => ({
+            day,
+            person: OCCUPIED_RESIDENTS[(trashIdx + i) % n]
+          }));
+
+          // ── Date formatting ─────────────────────────────────────────────────
+          function fmtDate(d) {
+            return d.toLocaleDateString("en-AU", {
+              weekday:"short", day:"numeric", month:"long", year:"numeric", timeZone:"UTC"
+            });
+          }
+
+          // ── Build email HTML ────────────────────────────────────────────────
+          const sharedRows = sharedAssignments.map(a =>
+            `<tr>
+              <td style="padding:8px 12px;border-bottom:1px solid #eee;">${a.area}</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:600;color:#2f7a57;">${a.person}</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #eee;color:#666;">${a.tasks.join(", ")}</td>
+            </tr>`
+          ).join("");
+
+          const trashRows = trashAssignments.map(t =>
+            `<tr>
+              <td style="padding:8px 12px;border-bottom:1px solid #eee;">${t.day}</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:600;color:#2f7a57;">${t.person}</td>
+              ${t.day === "Wednesday"
+                ? `<td style="padding:8px 12px;border-bottom:1px solid #eee;color:#b45309;font-weight:600;">⚠️ Put bins out tonight</td>`
+                : t.day === "Thursday"
+                  ? `<td style="padding:8px 12px;border-bottom:1px solid #eee;color:#b45309;font-weight:600;">♻️ Bin collection day</td>`
+                  : `<td style="padding:8px 12px;border-bottom:1px solid #eee;color:#666;">Take trash to bins</td>`
+              }
+            </tr>`
+          ).join("");
+
+          const ownBathRows = [...downstairsRooms, ...upstairsRooms]
+            .filter(r => r.ownBath)
+            .map(r =>
+              `<tr>
+                <td style="padding:8px 12px;border-bottom:1px solid #eee;">${r.name}</td>
+                <td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:600;color:#2f7a57;">${r.occupants}</td>
+                <td style="padding:8px 12px;border-bottom:1px solid #eee;color:#666;">Toilet · Sink and mirror · Shower and floor</td>
+              </tr>`
+            ).join("");
+
+          const reportHtml = `<!doctype html><html><body style="margin:0;padding:0;background:#f6f2ea;font-family:Arial,sans-serif;">
+          <div style="max-width:700px;margin:24px auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #ddd;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+            <div style="background:linear-gradient(135deg,#202623,#2f3a33);color:#f7f4ef;padding:28px 24px;">
+              <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#a8c4ab;margin-bottom:8px;">Weekly Schedule</div>
+              <h1 style="margin:0 0 6px;font-size:24px;">10 Glenfield Street</h1>
+              <h2 style="margin:0 0 10px;font-size:16px;font-weight:400;color:#c7d6cc;">Cleaning Schedule</h2>
+              <div style="background:rgba(122,158,126,0.25);display:inline-block;padding:5px 14px;border-radius:999px;font-size:13px;color:#a8c4ab;">
+                ${fmtDate(weekStart)} &ndash; ${fmtDate(weekEnd)}
+              </div>
+            </div>
+
+            <div style="padding:24px;">
+              <p style="color:#555;font-size:14px;margin-top:0;">Here is this week&rsquo;s cleaning schedule. Tap the link below to tick off tasks as you go.</p>
+
+              <a href="https://ryanbasko5-bot.github.io/house-cleaning/"
+                style="display:inline-block;background:#2f7a57;color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;font-weight:600;font-size:14px;margin-bottom:24px;">
+                → Open Cleaning Schedule App
+              </a>
+
+              <h3 style="font-size:15px;border-bottom:2px solid #2f7a57;padding-bottom:6px;margin-bottom:0;">Shared Areas — This Week&rsquo;s Assignments</h3>
+              <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+                <thead><tr style="background:#f6f2ea;">
+                  <th style="padding:8px 12px;text-align:left;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#888;">Area</th>
+                  <th style="padding:8px 12px;text-align:left;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#888;">Assigned To</th>
+                  <th style="padding:8px 12px;text-align:left;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#888;">Tasks</th>
+                </tr></thead>
+                <tbody>${sharedRows}</tbody>
+              </table>
+
+              <h3 style="font-size:15px;border-bottom:2px solid #2f7a57;padding-bottom:6px;margin-bottom:0;">Daily Trash Duty</h3>
+              <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+                <thead><tr style="background:#f6f2ea;">
+                  <th style="padding:8px 12px;text-align:left;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#888;">Day</th>
+                  <th style="padding:8px 12px;text-align:left;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#888;">Assigned To</th>
+                  <th style="padding:8px 12px;text-align:left;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#888;">Note</th>
+                </tr></thead>
+                <tbody>${trashRows}</tbody>
+              </table>
+
+              <h3 style="font-size:15px;border-bottom:2px solid #2f7a57;padding-bottom:6px;margin-bottom:0;">Own Bathroom Reminders</h3>
+              <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+                <thead><tr style="background:#f6f2ea;">
+                  <th style="padding:8px 12px;text-align:left;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#888;">Room</th>
+                  <th style="padding:8px 12px;text-align:left;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#888;">Occupants</th>
+                  <th style="padding:8px 12px;text-align:left;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#888;">Tasks</th>
+                </tr></thead>
+                <tbody>${ownBathRows}</tbody>
+              </table>
+
+              <div style="background:#fff8df;border:1px solid #e7d29c;border-radius:8px;padding:12px 16px;font-size:13px;color:#7a5d1e;">
+                <strong>Reminder:</strong> Kitchen, pool area, and verandas are cleaned by Ryan regularly.
+                Shared bedrooms are personal responsibility — keep tidy throughout the week.
+              </div>
+            </div>
+
+            <div style="background:#f6f2ea;padding:14px 24px;text-align:center;font-size:11px;color:#999;">
+              Auto-generated every Sunday &nbsp;·&nbsp; 10 Glenfield Street Cleaning Schedule &nbsp;·&nbsp;
+              <a href="https://ryanbasko5-bot.github.io/house-cleaning/" style="color:#2f7a57;">Open App</a>
+            </div>
+          </div>
+          </body></html>`;
+
+          // ── Send via EmailJS REST API ────────────────────────────────────────
+          const payload = JSON.stringify({
+            service_id:   EMAILJS_SERVICE,
+            template_id:  EMAILJS_TEMPLATE,
+            user_id:      EMAILJS_KEY,
+            template_params: {
+              to_email:    EMAIL_TARGET,
+              subject:     `Cleaning Schedule: ${fmtDate(weekStart)} – ${fmtDate(weekEnd)}`,
+              report_html: reportHtml
+            }
+          });
+
+          const options = {
+            hostname: "api.emailjs.com",
+            path:     "/api/v1.0/email/send",
+            method:   "POST",
+            headers:  {
+              "Content-Type":   "application/json",
+              "Content-Length": Buffer.byteLength(payload)
+            }
+          };
+
+          const req = https.request(options, (res) => {
+            let body = "";
+            res.on("data", d => body += d);
+            res.on("end", () => {
+              if (res.statusCode === 200) {
+                console.log(`✅ Weekly report sent to ${EMAIL_TARGET} for week ${currentWeekKey}`);
+              } else {
+                console.error(`❌ EmailJS error ${res.statusCode}: ${body}`);
+                process.exit(1);
+              }
+            });
+          });
+
+          req.on("error", (e) => {
+            console.error(`❌ Network error: ${e.message}`);
+            process.exit(1);
+          });
+
+          req.write(payload);
+          req.end();
+
+          NODEJS_EOF
