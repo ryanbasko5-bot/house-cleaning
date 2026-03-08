@@ -378,8 +378,8 @@
     <h2 class="section-title">🧹 Shared Areas — Weekly Rotation</h2>
     <section class="grid" id="sharedGrid"></section>
 
-    <h2 class="section-title">🏆 Leaderboard</h2>
-    <section class="leaderboard" id="leaderboard"></section>
+
+    <div class="leaderboard-section" id="leaderboardSection"></div>
 
     <div class="footer-note">
       Auto-resets every Sunday · Bins out Wed night · Collection Thursday<br>
@@ -871,31 +871,37 @@ const sharedAreas = [
 
     /* ══════════ LEADERBOARD ══════════ */
     function renderLeaderboard(rs, tasks) {
-      const section = document.getElementById("leaderboard");
-      const defs = allTaskDefinitions(rs);
-      const awaySet = new Set(getAwayResidents());
-      const scores = OCCUPIED_RESIDENTS.filter(r => !awaySet.has(r)).map(name => {
-        const my = defs.filter(d => isAssignedToPerson(d.assignedTo, name));
-        const done = my.filter(d => tasks[d.id]).length;
-        const total = my.length;
-        const pct = total ? Math.round(done / total * 100) : 0;
-        return { name, done, total, pct };
-      }).sort((a, b) => b.pct - a.pct || b.done - a.done);
-
-      const medals = ["👑", "🥈", "🥉"];
-      let html = `<div class="lb-title">🏆 Weekly Leaderboard</div>`;
-      scores.forEach((s, i) => {
-        const pos = i < 3 ? medals[i] : `${i + 1}.`;
-        const rank = getRankTitle(s.pct);
-        html += `<div class="lb-row">
-          <div class="lb-pos">${pos}</div>
-          <div class="lb-name">${escapeHtml(s.name)}<div class="lb-rank">${rank}</div></div>
-          <div class="lb-bar-wrap"><div class="lb-bar" style="width:${s.pct}%"></div></div>
-          <div class="lb-pct">${s.pct}%</div>
-        </div>`;
-      });
+      const section = document.getElementById("leaderboardSection");
+      const isOpen = loadJSON("leaderboard_panel_open", false);
+      let html = `<div class="hol-head" onclick="toggleLeaderboardPanel()"><h3>🏆 Leaderboard</h3><span class="hol-arrow${isOpen?" open":""}">▼</span></div>`;
+      if (isOpen) {
+        const defs = allTaskDefinitions(rs);
+        const awaySet = new Set(getAwayResidents());
+        const scores = OCCUPIED_RESIDENTS.filter(r => !awaySet.has(r)).map(name => {
+          const my = defs.filter(d => isAssignedToPerson(d.assignedTo, name));
+          const done = my.filter(d => tasks[d.id]).length;
+          const total = my.length;
+          const pct = total ? Math.round(done / total * 100) : 0;
+          return { name, done, total, pct };
+        }).sort((a, b) => b.pct - a.pct || b.done - a.done);
+        const medals = ["👑", "🥈", "🥉"];
+        html += `<div class="leaderboard">`;
+        html += `<div class="lb-title">🏆 Weekly Leaderboard</div>`;
+        scores.forEach((s, i) => {
+          const pos = i < 3 ? medals[i] : `${i + 1}.`;
+          const rank = getRankTitle(s.pct);
+          html += `<div class="lb-row">
+            <div class="lb-pos">${pos}</div>
+            <div class="lb-name">${escapeHtml(s.name)}<div class="lb-rank">${rank}</div></div>
+            <div class="lb-bar-wrap"><div class="lb-bar" style="width:${s.pct}%"></div></div>
+            <div class="lb-pct">${s.pct}%</div>
+          </div>`;
+        });
+        html += `</div>`;
+      }
       section.innerHTML = html;
     }
+    function toggleLeaderboardPanel(){saveJSON("leaderboard_panel_open",!loadJSON("leaderboard_panel_open",false));renderLeaderboard(advanceRotationToCurrentWeek(),loadWeekTasks());}
 
     /* ══════════ HOLIDAYS UI ══════════ */
     function renderHolidays() {
