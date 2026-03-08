@@ -8,12 +8,13 @@
     :root {
       --ink: #1e0a3c;
       --muted: #6b7280;
-      --line: #e9d5ff;
+      --line: #e5e7eb;
       --purple: #7c3aed;
       --pink: #db2777;
       --green: #059669;
       --amber: #d97706;
       --danger: #dc2626;
+      --radius: 16px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,278 +24,236 @@
       background: linear-gradient(160deg, #fdf4ff 0%, #fce7f3 45%, #e0f2fe 100%);
       min-height: 100vh;
       color: var(--ink);
+      -webkit-text-size-adjust: 100%;
     }
 
     .shell {
-      max-width: 600px;
+      max-width: 540px;
       margin: 0 auto;
-      padding: 14px 12px 80px;
+      padding: 12px 12px 100px;
     }
 
-    /* Hero */
+    /* ── Hero ── */
     .hero {
       background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 55%, #be185d 100%);
       color: white;
       border-radius: 22px;
-      padding: 20px;
-      box-shadow: 0 10px 40px rgba(124,58,237,0.38);
+      padding: 18px 16px;
+      box-shadow: 0 10px 40px rgba(124,58,237,0.35);
     }
 
-    .hero h1 {
-      font-size: clamp(1.2rem, 5vw, 1.7rem);
-      font-weight: 800;
-      letter-spacing: -0.01em;
-      line-height: 1.25;
-    }
+    .hero h1 { font-size: 1.3rem; font-weight: 800; }
+    .hero .subtitle { font-size: 0.78rem; opacity: 0.75; margin-top: 2px; }
+    .hero .meta { color: rgba(255,255,255,0.8); font-size: 0.78rem; margin-top: 4px; }
 
-    .hero .subtitle {
-      font-size: 0.82rem;
-      opacity: 0.8;
-      font-weight: 600;
-      margin-top: 2px;
-    }
+    .progress { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+    .progress-track { flex: 1; height: 10px; background: rgba(255,255,255,0.22); border-radius: 999px; overflow: hidden; }
+    .progress-fill { width: 0; height: 100%; background: linear-gradient(90deg, #a78bfa, #f0abfc, #86efac); border-radius: 999px; transition: width 300ms; }
+    #progressText { font-size: 0.78rem; color: rgba(255,255,255,0.9); font-weight: 700; white-space: nowrap; }
 
-    .hero .meta {
-      margin-top: 5px;
-      color: rgba(255,255,255,0.82);
-      font-size: 0.82rem;
-    }
+    .hero-btns { display: flex; gap: 8px; margin-top: 10px; }
+    .hero-btns button { flex: 1; }
 
-    /* Toolbar */
-    .toolbar {
+    /* ── Who are you picker ── */
+    .picker {
       margin-top: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .progress { display: flex; align-items: center; gap: 10px; }
-
-    .progress-track {
-      flex: 1;
-      height: 10px;
-      background: rgba(255,255,255,0.25);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      width: 0;
-      height: 100%;
-      background: linear-gradient(90deg, #a78bfa, #f0abfc, #86efac);
-      transition: width 300ms ease;
-      border-radius: 999px;
-    }
-
-    #progressText {
-      font-size: 0.82rem;
-      color: rgba(255,255,255,0.9);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .btns { display: flex; gap: 8px; }
-
-    button {
-      border: none;
-      border-radius: 12px;
-      padding: 11px 14px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 0.88rem;
-      min-height: 44px;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 0.1s, opacity 0.1s;
-    }
-
-    button:active { transform: scale(0.95); opacity: 0.85; }
-
-    .btn-email {
-      background: rgba(255,255,255,0.18);
-      color: white;
-      border: 1.5px solid rgba(255,255,255,0.4);
-      flex: 1;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #059669, #10b981);
-      color: white;
-      box-shadow: 0 4px 14px rgba(5,150,105,0.4);
-      flex: 1;
-    }
-
-    .btn-danger {
-      background: transparent;
-      color: rgba(255,255,255,0.62);
-      border: 1.5px solid rgba(255,255,255,0.28);
-      font-size: 0.77rem;
-      padding: 8px 10px;
-      min-height: 36px;
-    }
-
-    /* Section headings */
-    .section-title {
-      margin: 22px 0 10px;
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--ink);
-    }
-
-    /* Grid */
-    .grid {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: 1fr;
-    }
-
-    .grid.two-col { grid-template-columns: 1fr 1fr; }
-
-    @media (min-width: 520px) {
-      .grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-    }
-
-    /* Cards */
-    .room-card, .area-card, .day-card {
       background: white;
-      border-radius: 16px;
+      border-radius: var(--radius);
       padding: 14px;
       box-shadow: 0 2px 12px rgba(0,0,0,0.07);
     }
-
-    .room-card { border-top: 4px solid var(--purple); }
-    .area-card { border-top: 4px solid var(--pink); }
-    .day-card  { border-top: 4px solid var(--amber); }
-    .day-card.today {
-      border-top: 4px solid var(--green);
-      box-shadow: 0 4px 20px rgba(5,150,105,0.22);
-    }
-
-    .room-head, .area-head, .day-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+    .picker-label { font-weight: 800; font-size: 0.95rem; margin-bottom: 10px; }
+    .picker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
       gap: 6px;
-      margin-bottom: 8px;
     }
-
-    .name { font-weight: 800; font-size: 0.97rem; }
-    .muted { color: var(--muted); font-size: 0.82rem; }
-
-    .pill {
-      display: inline-block;
-      font-size: 0.72rem;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: #f3e8ff;
-      color: var(--purple);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .pill.warn { background: #fff7ed; color: #c2410c; }
-    .pill.green { background: #d1fae5; color: #065f46; }
-
-    /* Tasks */
-    .task-list { display: grid; gap: 1px; margin-top: 4px; }
-
-    .task-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 4px;
+    .picker-btn {
+      padding: 9px 4px;
       border-radius: 10px;
+      border: 2px solid var(--line);
+      background: #faf5ff;
+      font-weight: 700;
+      font-size: 0.82rem;
       cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
       min-height: 40px;
       -webkit-tap-highlight-color: transparent;
     }
-
-    .task-row:active { background: #faf5ff; }
-
-    .task-row.done .label {
-      text-decoration: line-through;
-      color: var(--muted);
-      opacity: 0.75;
+    .picker-btn:active { transform: scale(0.95); }
+    .picker-btn.active {
+      background: var(--purple);
+      color: white;
+      border-color: var(--purple);
+      box-shadow: 0 3px 12px rgba(124,58,237,0.35);
+    }
+    .picker-btn.everyone {
+      grid-column: 1 / -1;
+      background: #f0fdf4;
+      border-color: #86efac;
+      color: #065f46;
+    }
+    .picker-btn.everyone.active {
+      background: var(--green);
+      color: white;
+      border-color: var(--green);
+      box-shadow: 0 3px 12px rgba(5,150,105,0.35);
     }
 
-    input[type="checkbox"] {
-      width: 22px;
-      height: 22px;
-      accent-color: var(--purple);
+    /* ── Your tasks banner ── */
+    .your-tasks {
+      margin-top: 14px;
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: white;
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(5,150,105,0.3);
+    }
+    .your-tasks.hidden { display: none; }
+    .your-tasks h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 2px; }
+    .your-tasks .yt-sub { font-size: 0.78rem; opacity: 0.85; margin-bottom: 12px; }
+    .your-task-item {
+      background: rgba(255,255,255,0.18);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .your-task-item:last-child { margin-bottom: 0; }
+    .your-task-item.done { opacity: 0.55; }
+    .your-task-item.done .yt-label { text-decoration: line-through; }
+    .your-task-item input[type="checkbox"] {
+      width: 22px; height: 22px;
+      accent-color: white;
       flex-shrink: 0;
     }
+    .yt-label { font-size: 0.88rem; font-weight: 600; }
+    .yt-where { font-size: 0.72rem; opacity: 0.8; margin-top: 1px; }
+    .yt-date { font-size: 0.68rem; opacity: 0.7; margin-top: 1px; }
 
-    .label { font-size: 0.88rem; line-height: 1.3; }
-
-    /* Notice */
-    .notice {
-      margin: 12px 0;
-      background: #f0fdf4;
-      border: 1.5px solid #86efac;
-      border-radius: 14px;
-      padding: 11px 14px;
-      font-size: 0.88rem;
-      color: #14532d;
-    }
-
-    .notice.hidden { display: none; }
-
-    /* Footer */
-    .footer-note {
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 0.8rem;
-      text-align: center;
-      line-height: 1.7;
-    }
-
-    /* Modal — slides up from bottom on mobile */
-    .modal {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      background: rgba(0,0,0,0.55);
-      z-index: 20;
-    }
-
-    .modal.open { display: flex; }
-
-    .card {
+    .wa-btn {
+      margin-top: 10px;
       width: 100%;
-      max-width: 600px;
-      background: white;
-      border-radius: 24px 24px 0 0;
-      padding: 22px 20px 36px;
-      max-height: 90vh;
-      overflow-y: auto;
+      background: #25D366;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      min-height: 44px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .wa-btn:active { transform: scale(0.97); opacity: 0.9; }
+
+    /* ── Section headings ── */
+    .section-title {
+      margin: 20px 0 8px;
+      font-size: 1.05rem;
+      font-weight: 800;
     }
 
+    /* ── Grid ── */
+    .grid { display: grid; gap: 8px; grid-template-columns: 1fr; }
+    .grid.two-col { grid-template-columns: 1fr 1fr; }
+    @media (min-width: 420px) {
+      .grid:not(.two-col) { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    }
+
+    /* ── Cards ── */
+    .day-card, .room-card, .area-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      transition: opacity 0.2s;
+    }
+
+    .faded { opacity: 0.4; }
+
+    .day-card  { border-left: 4px solid var(--amber); }
+    .day-card.today { border-left: 4px solid var(--green); box-shadow: 0 4px 18px rgba(5,150,105,0.2); }
+    .room-card { border-left: 4px solid var(--purple); }
+    .area-card { border-left: 4px solid var(--pink); }
+
+    .card-head { margin-bottom: 6px; }
+    .card-title { font-weight: 800; font-size: 0.92rem; }
+    .card-sub { font-size: 0.76rem; color: var(--muted); margin-top: 1px; }
+
+    .pill {
+      display: inline-block;
+      font-size: 0.68rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 700;
+      white-space: nowrap;
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+    .pill.warn { background: #fff7ed; color: #c2410c; }
+    .pill.green { background: #d1fae5; color: #065f46; }
+
+    /* ── Tasks ── */
+    .task-list { display: grid; gap: 1px; }
+    .task-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 4px; border-radius: 10px;
+      cursor: pointer; min-height: 40px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .task-row:active { background: #faf5ff; }
+    .task-row.done .label { text-decoration: line-through; color: var(--muted); opacity: 0.7; }
+    input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--purple); cursor: pointer; flex-shrink: 0; }
+    .label { font-size: 0.85rem; line-height: 1.3; }
+
+    /* ── Buttons ── */
+    button {
+      border: none; border-radius: 12px; padding: 11px 14px;
+      font-weight: 700; cursor: pointer; font-size: 0.85rem;
+      min-height: 44px; -webkit-tap-highlight-color: transparent;
+      transition: transform 0.1s;
+    }
+    button:active { transform: scale(0.95); }
+    .btn-primary { background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; box-shadow: 0 4px 14px rgba(124,58,237,0.35); }
+
+    /* ── Footer ── */
+    .footer-note {
+      margin-top: 18px; color: var(--muted); font-size: 0.75rem;
+      text-align: center; line-height: 1.7;
+    }
+    .footer-note a { color: var(--purple); font-weight: 700; }
+
+    /* ── Modal ── */
+    .modal { position: fixed; inset: 0; display: none; align-items: flex-end; justify-content: center; background: rgba(0,0,0,0.55); z-index: 20; }
+    .modal.open { display: flex; }
+    .modal-card {
+      width: 100%; max-width: 540px; background: white;
+      border-radius: 24px 24px 0 0; padding: 22px 18px 36px;
+      max-height: 90vh; overflow-y: auto;
+    }
     @media (min-width: 600px) {
       .modal { align-items: center; padding: 16px; }
-      .card { border-radius: 20px; padding: 22px; }
+      .modal-card { border-radius: 20px; padding: 22px; }
     }
-
-    .card h3 { margin: 0 0 14px; font-size: 1.1rem; font-weight: 800; }
-
+    .modal-card h3 { margin: 0 0 12px; font-size: 1.1rem; font-weight: 800; }
     .field { display: grid; gap: 5px; margin-bottom: 12px; }
-    .field label { font-size: 0.83rem; color: var(--muted); font-weight: 600; }
-
-    .field input {
-      padding: 11px 12px;
-      border-radius: 10px;
-      border: 1.5px solid var(--line);
-      width: 100%;
-      font-size: 0.95rem;
-    }
-
+    .field label { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+    .field input { padding: 11px 12px; border-radius: 10px; border: 1.5px solid var(--line); width: 100%; font-size: 0.95rem; }
     .field input:focus { outline: none; border-color: var(--purple); }
-
     .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
 
+    .notice { margin: 10px 0; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 14px; padding: 10px 14px; font-size: 0.82rem; color: #14532d; }
+    .notice.hidden { display: none; }
+
     @supports (padding: max(0px)) {
-      .shell { padding-bottom: max(80px, calc(60px + env(safe-area-inset-bottom))); }
+      .shell { padding-bottom: max(100px, calc(60px + env(safe-area-inset-bottom))); }
     }
   </style>
 </head>
@@ -304,63 +263,50 @@
       <h1>🏡 10 Glenfield Street</h1>
       <div class="subtitle">Cleaning Schedule ✨</div>
       <div class="meta" id="todayDate"></div>
-      <div class="meta" id="weekRange">Week</div>
-      <div class="meta" id="rotationMeta">Rotation</div>
+      <div class="meta" id="weekRange"></div>
 
-      <div class="toolbar">
-        <div class="progress">
-          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-          <div id="progressText">0/0</div>
-        </div>
+      <div class="progress">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div id="progressText">0/0</div>
+      </div>
 
-        <div class="btns">
-          <button class="btn-primary" onclick="sendWeeklyReport()">📊 Send report</button>
-        </div>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="sendWeeklyReport()">📊 Send report</button>
       </div>
     </section>
 
     <div class="notice" id="emailNotice">
-      ✅ Weekly email report is configured and will auto-send to <strong>ryanbaskerville09@hotmail.com</strong> every Sunday night at 8 pm. You can also send it manually anytime using the button above.
+      ✅ Weekly email report auto-sends to <strong>ryanbaskerville09@hotmail.com</strong> every Sunday at 8 pm.
     </div>
+
+    <div class="picker">
+      <div class="picker-label">👋 Who are you?</div>
+      <div class="picker-grid" id="pickerGrid"></div>
+    </div>
+
+    <section class="your-tasks hidden" id="yourTasks"></section>
 
     <h2 class="section-title">🗑️ Daily Trash Duty</h2>
     <section class="grid two-col" id="trashGrid"></section>
 
-    <h2 class="section-title">🛏️ Downstairs Bedrooms</h2>
-    <section class="grid" id="downstairsGrid"></section>
+    <h2 class="section-title">🛏️ Bedrooms</h2>
+    <section class="grid" id="bedroomGrid"></section>
 
-    <h2 class="section-title">🛏️ Upstairs Bedrooms</h2>
-    <section class="grid" id="upstairsGrid"></section>
-
-    <h2 class="section-title">🧹 Shared Areas (Weekly Rotation)</h2>
+    <h2 class="section-title">🧹 Shared Areas — Weekly Rotation</h2>
     <section class="grid" id="sharedGrid"></section>
 
     <div class="footer-note">
-      Weekly reset day: Sunday &nbsp;·&nbsp; Bins out Wednesday night &nbsp;·&nbsp; Bin collection Thursday<br>
-      Bookmark this page: <a href="https://ryanbasko5-bot.github.io/house-cleaning/" style="color:#2f7a57;font-weight:600;">ryanbasko5-bot.github.io/house-cleaning</a>
+      Auto-resets every Sunday · Bins out Wed night · Collection Thursday<br>
+      <a href="https://ryanbasko5-bot.github.io/house-cleaning/">ryanbasko5-bot.github.io/house-cleaning</a>
     </div>
   </div>
 
   <div class="modal" id="emailModal">
-    <div class="card">
+    <div class="modal-card">
       <h3>Email report setup</h3>
-      <p class="muted">Use EmailJS template variables: <code>{{to_email}}</code>, <code>{{subject}}</code>, <code>{{report_html}}</code>.</p>
-
-      <div class="field">
-        <label for="ejsKey">Public key</label>
-        <input id="ejsKey" />
-      </div>
-
-      <div class="field">
-        <label for="ejsService">Service ID</label>
-        <input id="ejsService" />
-      </div>
-
-      <div class="field">
-        <label for="ejsTemplate">Template ID</label>
-        <input id="ejsTemplate" />
-      </div>
-
+      <div class="field"><label for="ejsKey">Public key</label><input id="ejsKey" /></div>
+      <div class="field"><label for="ejsService">Service ID</label><input id="ejsService" /></div>
+      <div class="field"><label for="ejsTemplate">Template ID</label><input id="ejsTemplate" /></div>
       <div class="row">
         <button onclick="closeEmailSetup()">Cancel</button>
         <button class="btn-primary" onclick="saveEmailSetup()">Save</button>
@@ -370,577 +316,288 @@
 
   <script>
     const EMAIL_TARGET = "ryanbaskerville09@hotmail.com";
-    const EMAILJS_DEFAULT_CONFIG = {
-      service: "service_d9nq37p",
-      template: "template_hdzyvit",
-      key: "8xDuvCoPapEkbrVqU"
-    };
+    const EMAILJS_DEFAULT_CONFIG = { service: "service_d9nq37p", template: "template_hdzyvit", key: "8xDuvCoPapEkbrVqU" };
 
-    const OCCUPIED_RESIDENTS = [
-      "Makayla",
-      "Henry",
-      "Maeve",
-      "Megan",
-      "Ryan",
-      "Diago",
-      "Astrid",
-      "Rohain",
-      "Svetlana",
-      "Ziyue"
-    ];
+    const OCCUPIED_RESIDENTS = ["Makayla","Henry","Maeve","Megan","Ryan","Diago","Astrid","Rohain","Svetlana","Ziyue"];
+    const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 
-    const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
-    const downstairsRooms = [
-      {
-        id: "d1",
-        name: "Bedroom 1",
-        occupants: "Makayla",
-        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
-        ownBathroomTasks: []
-      },
-      {
-        id: "d2",
-        name: "Bedroom 2",
-        occupants: "Henry and Maeve",
-        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
-        ownBathroomTasks: ["Toilet", "Sink and mirror", "Shower and floor"]
-      },
-      {
-        id: "d3",
-        name: "Bedroom 3",
-        occupants: "Megan",
-        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
-        ownBathroomTasks: []
-      },
-      {
-        id: "d4",
-        name: "Bedroom 4",
-        occupants: "Ryan",
-        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
-        ownBathroomTasks: []
-      }
-    ];
-
-    const upstairsRooms = [
-      {
-        id: "u1",
-        name: "Bedroom 1",
-        occupants: "Vacant",
-        roomTasks: [],
-        ownBathroomTasks: [],
-        vacant: true
-      },
-      {
-        id: "u2",
-        name: "Bedroom 2",
-        occupants: "Diago and Astrid",
-        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
-        ownBathroomTasks: []
-      },
-      {
-        id: "u3",
-        name: "Bedroom 3",
-        occupants: "Rohain and Svetlana",
-        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
-        ownBathroomTasks: ["Toilet", "Sink and mirror", "Shower and floor"]
-      },
-      {
-        id: "u4",
-        name: "Bedroom 4",
-        occupants: "Ziyue",
-        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
-        ownBathroomTasks: []
-      }
+    const allRooms = [
+      { id:"d1", floor:"Downstairs", occupants:"Makayla",           roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
+      { id:"d2", floor:"Downstairs", occupants:"Henry & Maeve",     roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
+      { id:"d3", floor:"Downstairs", occupants:"Megan",             roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
+      { id:"d4", floor:"Downstairs", occupants:"Ryan",              roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
+      { id:"u1", floor:"Upstairs",   occupants:"Vacant",            roomTasks:[], vacant:true },
+      { id:"u2", floor:"Upstairs",   occupants:"Diago & Astrid",    roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
+      { id:"u3", floor:"Upstairs",   occupants:"Rohain & Svetlana", roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
+      { id:"u4", floor:"Upstairs",   occupants:"Ziyue",             roomTasks:["Keep tidy & clear floor","Dust & wipe surfaces"] },
     ];
 
     const sharedAreas = [
-      { id: "shared_bath_down", name: "Downstairs shared bathroom", tasks: ["Toilet", "Sink and mirror", "Shower and floor"] },
-      { id: "shared_bath_up", name: "Upstairs shared bathroom", tasks: ["Toilet", "Sink and mirror", "Shower and floor"] },
-      { id: "shared_kitchen", name: "Kitchen", tasks: ["Benches and sink", "Stovetop and fronts", "Floor and bins"] },
-      { id: "shared_laundry", name: "Laundry room", tasks: ["Wipe machines", "Sink and surfaces", "Floor"] },
-      { id: "shared_veranda_down", name: "Downstairs veranda", tasks: ["Sweep", "Wipe furniture", "Tidy items"] },
-      { id: "shared_veranda_up", name: "Upstairs veranda", tasks: ["Sweep", "Wipe furniture", "Tidy items"] }
+      { id:"sa_bath_down", name:"🚿 Downstairs Bathroom", tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
+      { id:"sa_bath_up",   name:"🚿 Upstairs Bathroom",   tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
+      { id:"sa_kitchen",   name:"🍳 Kitchen",             tasks:["Wipe benches & clean sink","Clean stovetop & appliance fronts","Sweep & mop kitchen floor","Empty & reline bins"] },
+      { id:"sa_laundry",   name:"🧺 Laundry Room",        tasks:["Wipe machines & surfaces","Clean laundry sink","Sweep & mop floor"] },
+      { id:"sa_ver_down",  name:"🌿 Downstairs Veranda",  tasks:["Sweep veranda floor","Mop veranda floor","Wipe down furniture","Tidy shoes & items"] },
+      { id:"sa_ver_up",    name:"🌿 Upstairs Veranda",    tasks:["Sweep veranda floor","Mop veranda floor","Wipe down furniture","Tidy items"] },
+      { id:"sa_hall_up",   name:"🚪 Upstairs Hallway",    tasks:["Sweep & mop hallway floor","Wipe light switches & door handles"] },
+      { id:"sa_hall_down", name:"🚪 Downstairs Hallway",  tasks:["Sweep & mop hallway floor","Wipe light switches & door handles"] },
     ];
 
-    function toDateOnlyKey(dateObj) {
-      const y = dateObj.getFullYear();
-      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
-      const d = String(dateObj.getDate()).padStart(2, "0");
-      return `${y}-${m}-${d}`;
-    }
+    /* ── Date helpers ── */
+    function toDateOnlyKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+    function getWeekStartSunday(date=new Date()) { const d=new Date(date); d.setHours(0,0,0,0); d.setDate(d.getDate()-d.getDay()); return d; }
+    function getCurrentWeekKey() { return toDateOnlyKey(getWeekStartSunday()); }
+    function weeksBetween(a,b) { const ms=new Date(`${b}T00:00:00`)-new Date(`${a}T00:00:00`); return ms<=0?0:Math.floor(ms/(7*864e5)); }
+    function shortDate(d) { return d.toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short"}); }
+    function formatDate(d) { return d.toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short",year:"numeric"}); }
 
-    function getWeekStartSunday(date = new Date()) {
-      const d = new Date(date);
-      d.setHours(0, 0, 0, 0);
-      d.setDate(d.getDate() - d.getDay());
+    function getDayDate(dayIndex) {
+      const ws = getWeekStartSunday();
+      const jsDay = dayIndex === 6 ? 0 : dayIndex + 1;
+      const d = new Date(ws);
+      d.setDate(ws.getDate() + ((jsDay - ws.getDay() + 7) % 7));
       return d;
     }
 
-    function getCurrentWeekKey() {
-      return toDateOnlyKey(getWeekStartSunday(new Date()));
-    }
-
-    function weeksBetween(startKey, endKey) {
-      const start = new Date(`${startKey}T00:00:00`);
-      const end = new Date(`${endKey}T00:00:00`);
-      const ms = end.getTime() - start.getTime();
-      if (ms <= 0) return 0;
-      return Math.floor(ms / (7 * 24 * 60 * 60 * 1000));
-    }
-
-    function loadJSON(key, fallback) {
-      try {
-        const raw = localStorage.getItem(key);
-        if (!raw) return fallback;
-        return JSON.parse(raw);
-      } catch {
-        return fallback;
-      }
-    }
-
-    function saveJSON(key, value) {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-
-    function getEmailConfig() {
-      const cfg = loadJSON("emailjs_config_v1", {});
-      return {
-        key: cfg.key || EMAILJS_DEFAULT_CONFIG.key,
-        service: cfg.service || EMAILJS_DEFAULT_CONFIG.service,
-        template: cfg.template || EMAILJS_DEFAULT_CONFIG.template
-      };
-    }
-
-    function initializeDefaultEmailConfig() {
-      const cfg = getEmailConfig();
-      saveJSON("emailjs_config_v1", cfg);
-    }
+    /* ── Storage ── */
+    function loadJSON(k,fb) { try { const r=localStorage.getItem(k); return r?JSON.parse(r):fb; } catch{return fb;} }
+    function saveJSON(k,v) { localStorage.setItem(k,JSON.stringify(v)); }
+    function getEmailConfig() { const c=loadJSON("emailjs_config_v1",{}); return {key:c.key||EMAILJS_DEFAULT_CONFIG.key,service:c.service||EMAILJS_DEFAULT_CONFIG.service,template:c.template||EMAILJS_DEFAULT_CONFIG.template}; }
+    function initializeDefaultEmailConfig() { saveJSON("emailjs_config_v1",getEmailConfig()); }
 
     function getRotationState() {
-      return loadJSON("rotationState_v1", {
-        version: 1,
-        anchorWeekKey: getCurrentWeekKey(),
-        sharedStartIndex: 0,
-        trashStartIndex: 0,
-        lastSharedAssigned: null,
-        lastTrashAssigned: null
-      });
+      return loadJSON("rotationState_v2",{ version:2, anchorWeekKey:getCurrentWeekKey(), sharedStartIndex:0, trashStartIndex:0, lastSharedAssigned:null, lastTrashAssigned:null });
     }
-
-    function saveRotationState(state) {
-      saveJSON("rotationState_v1", state);
-    }
+    function saveRotationState(s) { saveJSON("rotationState_v2",s); }
 
     function advanceRotationToCurrentWeek() {
-      const state = getRotationState();
-      const currentWeekKey = getCurrentWeekKey();
-      const weekJumps = weeksBetween(state.anchorWeekKey, currentWeekKey);
-
-      if (weekJumps > 0) {
-        const n = OCCUPIED_RESIDENTS.length;
-        state.sharedStartIndex = (state.sharedStartIndex + (sharedAreas.length * weekJumps)) % n;
-        state.trashStartIndex = (state.trashStartIndex + (DAYS.length * weekJumps)) % n;
-        state.anchorWeekKey = currentWeekKey;
-      }
-
-      const currentShared = [];
-      for (let i = 0; i < sharedAreas.length; i += 1) {
-        currentShared.push(OCCUPIED_RESIDENTS[(state.sharedStartIndex + i) % OCCUPIED_RESIDENTS.length]);
-      }
-      state.lastSharedAssigned = currentShared[currentShared.length - 1];
-
-      const currentTrash = [];
-      for (let d = 0; d < DAYS.length; d += 1) {
-        currentTrash.push(OCCUPIED_RESIDENTS[(state.trashStartIndex + d) % OCCUPIED_RESIDENTS.length]);
-      }
-      state.lastTrashAssigned = currentTrash[currentTrash.length - 1];
-
-      saveRotationState(state);
-      return state;
+      const s=getRotationState(), cur=getCurrentWeekKey(), jumps=weeksBetween(s.anchorWeekKey,cur);
+      if(jumps>0){ const n=OCCUPIED_RESIDENTS.length; s.sharedStartIndex=(s.sharedStartIndex+sharedAreas.length*jumps)%n; s.trashStartIndex=(s.trashStartIndex+DAYS.length*jumps)%n; s.anchorWeekKey=cur; }
+      const cs=[]; for(let i=0;i<sharedAreas.length;i++) cs.push(OCCUPIED_RESIDENTS[(s.sharedStartIndex+i)%OCCUPIED_RESIDENTS.length]); s.lastSharedAssigned=cs[cs.length-1];
+      const ct=[]; for(let d=0;d<DAYS.length;d++) ct.push(OCCUPIED_RESIDENTS[(s.trashStartIndex+d)%OCCUPIED_RESIDENTS.length]); s.lastTrashAssigned=ct[ct.length-1];
+      saveRotationState(s); return s;
     }
 
-    function getWeekTasksKey() {
-      return `tasks_${getCurrentWeekKey()}`;
-    }
+    function getWeekTasksKey() { return `tasks_${getCurrentWeekKey()}`; }
+    function loadWeekTasks() { return loadJSON(getWeekTasksKey(),{}); }
+    function saveWeekTasks(t) { saveJSON(getWeekTasksKey(),t); }
+    function maybeCleanupOldTaskKeys() { const ks=Object.keys(localStorage).filter(k=>k.startsWith("tasks_")).sort(); if(ks.length>12) ks.slice(0,ks.length-12).forEach(k=>localStorage.removeItem(k)); }
 
-    function loadWeekTasks() {
-      return loadJSON(getWeekTasksKey(), {});
-    }
+    /* ── Assignments ── */
+    function getSharedAssignments(rs) { const o={}; sharedAreas.forEach((a,i)=>{o[a.id]=OCCUPIED_RESIDENTS[(rs.sharedStartIndex+i)%OCCUPIED_RESIDENTS.length];}); return o; }
+    function getTrashAssignments(rs) { return DAYS.map((_,i)=>OCCUPIED_RESIDENTS[(rs.trashStartIndex+i)%OCCUPIED_RESIDENTS.length]); }
 
-    function saveWeekTasks(tasks) {
-      saveJSON(getWeekTasksKey(), tasks);
-    }
-
-    function maybeCleanupOldTaskKeys() {
-      const prefix = "tasks_";
-      const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix)).sort();
-      const keepCount = 12;
-      if (keys.length <= keepCount) return;
-      const remove = keys.slice(0, keys.length - keepCount);
-      remove.forEach(k => localStorage.removeItem(k));
-    }
-
-    function getSharedAssignments(rotationState) {
-      const out = {};
-      sharedAreas.forEach((area, index) => {
-        out[area.id] = OCCUPIED_RESIDENTS[(rotationState.sharedStartIndex + index) % OCCUPIED_RESIDENTS.length];
-      });
-      return out;
-    }
-
-    function getTrashAssignments(rotationState) {
-      return DAYS.map((_, index) => OCCUPIED_RESIDENTS[(rotationState.trashStartIndex + index) % OCCUPIED_RESIDENTS.length]);
-    }
-
-    function allTaskDefinitions(rotationState) {
-      const defs = [];
-      const trashAssignments = getTrashAssignments(rotationState);
-
-      DAYS.forEach((day, i) => {
-        defs.push({
-          id: `trash_${i}`,
-          section: `Trash - ${day}`,
-          task: "Take trash to bins",
-          assignedTo: trashAssignments[i]
-        });
-      });
-
-      [...downstairsRooms, ...upstairsRooms].forEach(room => {
-        room.roomTasks.forEach((task, i) => {
-          defs.push({
-            id: `room_${room.id}_${i}`,
-            section: room.occupants,
-            task,
-            assignedTo: room.occupants
-          });
-        });
-      });
-
-      const sharedAssignments = getSharedAssignments(rotationState);
-      sharedAreas.forEach(area => {
-        area.tasks.forEach((task, i) => {
-          defs.push({
-            id: `shared_${area.id}_${i}`,
-            section: area.name,
-            task,
-            assignedTo: sharedAssignments[area.id]
-          });
-        });
-      });
-
+    function allTaskDefinitions(rs) {
+      const defs=[], ta=getTrashAssignments(rs);
+      DAYS.forEach((day,i)=>{ const dd=getDayDate(i); defs.push({id:`trash_${i}`,section:"🗑️ Trash",task:"Take trash to bins",assignedTo:ta[i],day,date:dd,dateStr:shortDate(dd)}); });
+      allRooms.forEach(room=>{ if(room.vacant) return; room.roomTasks.forEach((task,i)=>{ defs.push({id:`room_${room.id}_${i}`,section:"🛏️ Your Bedroom",task,assignedTo:room.occupants,day:"This week",date:null,dateStr:"anytime this week"}); }); });
+      const sa=getSharedAssignments(rs); sharedAreas.forEach(area=>{ area.tasks.forEach((task,i)=>{ defs.push({id:`shared_${area.id}_${i}`,section:area.name,task,assignedTo:sa[area.id],day:"This week",date:null,dateStr:"anytime this week"}); }); });
       return defs;
     }
 
-    function formatDate(d) {
-      return d.toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+    /* ── Person matching ── */
+    function isAssignedToPerson(assignedTo, name) {
+      if(!name) return false;
+      const low=name.toLowerCase();
+      return assignedTo.toLowerCase().split(/\s*&\s*|\s+and\s+/i).some(n=>n.trim()===low);
     }
 
-    function escapeHtml(s) {
-      return String(s)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+    /* ══════════ PICKER ══════════ */
+    let selectedPerson = localStorage.getItem("selectedPerson") || null;
+
+    function renderPicker() {
+      const grid=document.getElementById("pickerGrid"); grid.innerHTML="";
+      const allBtn=document.createElement("button");
+      allBtn.className=`picker-btn everyone${!selectedPerson?" active":""}`;
+      allBtn.textContent="👀 Everyone";
+      allBtn.onclick=()=>{selectedPerson=null;localStorage.removeItem("selectedPerson");renderApp();};
+      grid.appendChild(allBtn);
+      OCCUPIED_RESIDENTS.forEach(name=>{
+        const btn=document.createElement("button");
+        btn.className=`picker-btn${selectedPerson===name?" active":""}`;
+        btn.textContent=name;
+        btn.onclick=()=>{selectedPerson=name;localStorage.setItem("selectedPerson",name);renderApp();};
+        grid.appendChild(btn);
+      });
     }
 
-    function renderApp() {
-      const rotationState = advanceRotationToCurrentWeek();
-      const tasks = loadWeekTasks();
+    /* ══════════ YOUR TASKS ══════════ */
+    function renderYourTasks(rs, tasks) {
+      const section=document.getElementById("yourTasks");
+      if(!selectedPerson){section.classList.add("hidden");section.innerHTML="";return;}
+      const defs=allTaskDefinitions(rs);
+      const myTasks=defs.filter(d=>isAssignedToPerson(d.assignedTo,selectedPerson));
+      const todayDayIndex=(()=>{const n=new Date().getDay();return n===0?6:n-1;})();
+      const todayName=DAYS[todayDayIndex];
+      myTasks.sort((a,b)=>(a.day===todayName?0:1)-(b.day===todayName?0:1));
+      const doneCount=myTasks.filter(d=>tasks[d.id]).length;
 
-      const now = new Date();
-      document.getElementById("todayDate").textContent =
-        "Today: " + now.toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+      section.classList.remove("hidden");
+      section.innerHTML=`<h2>📋 ${escapeHtml(selectedPerson)}'s Tasks</h2><div class="yt-sub">${doneCount}/${myTasks.length} done — keep going! 💪</div>`;
 
-      const weekStart = getWeekStartSunday(new Date());
-      const weekEnd = new Date(weekStart);
-      weekEnd.setDate(weekStart.getDate() + 6);
-      document.getElementById("weekRange").textContent = `Week: ${formatDate(weekStart)} to ${formatDate(weekEnd)}`;
-      document.getElementById("rotationMeta").textContent = `Rotation memory — last shared: ${rotationState.lastSharedAssigned || "n/a"} · last trash: ${rotationState.lastTrashAssigned || "n/a"}`;
+      myTasks.forEach(def=>{
+        const done=Boolean(tasks[def.id]);
+        const item=document.createElement("label");
+        item.className=`your-task-item${done?" done":""}`;
+        const isToday=def.day===todayName;
+        const whenLabel=isToday?"📅 TODAY":`📅 ${def.dateStr}`;
+        item.innerHTML=`<input type="checkbox" ${done?"checked":""} data-task-id="${def.id}" /><div><div class="yt-label">${escapeHtml(def.task)}</div><div class="yt-where">${escapeHtml(def.section)}</div><div class="yt-date">${whenLabel}</div></div>`;
+        section.appendChild(item);
+      });
 
-      renderTrash(rotationState, tasks);
-      renderRooms("downstairsGrid", downstairsRooms, tasks);
-      renderRooms("upstairsGrid", upstairsRooms, tasks);
-      renderShared(rotationState, tasks);
-      renderProgress(rotationState, tasks);
-      renderEmailNotice();
+      const waBtn=document.createElement("button");
+      waBtn.className="wa-btn";
+      waBtn.textContent=`💬 Send ${selectedPerson} a WhatsApp reminder`;
+      waBtn.onclick=()=>sendWhatsAppReminder(selectedPerson,myTasks,tasks);
+      section.appendChild(waBtn);
     }
 
-    function renderTaskRow(id, label, checked) {
-      const row = document.createElement("label");
-      row.className = `task-row${checked ? " done" : ""}`;
-      row.innerHTML = `
-        <input type="checkbox" ${checked ? "checked" : ""} data-task-id="${id}" />
-        <span class="label">${escapeHtml(label)}</span>
-      `;
+    /* ══════════ WHATSAPP ══════════ */
+    function sendWhatsAppReminder(name,myTasks,tasks) {
+      const pending=myTasks.filter(d=>!tasks[d.id]);
+      if(!pending.length){alert(`${name} has finished all their tasks! 🎉`);return;}
+      let msg=`🏡 *10 Glenfield St — Cleaning Reminder*\n\nHey ${name}! Here's what you still need to do:\n\n`;
+      pending.forEach((t,i)=>{msg+=`${i+1}. *${t.task}*\n   📍 ${t.section}\n   📅 ${t.dateStr}\n\n`;});
+      msg+=`✅ Tick them off here:\nhttps://ryanbasko5-bot.github.io/house-cleaning/`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,"_blank");
+    }
+
+    /* ══════════ RENDER: TRASH ══════════ */
+    function renderTrash(rs,tasks) {
+      const target=document.getElementById("trashGrid"); target.innerHTML="";
+      const assignments=getTrashAssignments(rs);
+      const todayIndex=(()=>{const n=new Date().getDay();return n===0?6:n-1;})();
+      DAYS.forEach((day,i)=>{
+        const card=document.createElement("article");
+        const isToday=i===todayIndex;
+        const mine=selectedPerson&&isAssignedToPerson(assignments[i],selectedPerson);
+        const faded=selectedPerson&&!mine;
+        card.className=`day-card${isToday?" today":""}${faded?" faded":""}`;
+        const dd=getDayDate(i), dateLabel=shortDate(dd);
+        const note=i===2?"🟠 Bins out tonight!":i===3?"🟠 Collection day":"";
+        const todayBadge=isToday?`<span class="pill green">TODAY</span>`:"";
+        card.innerHTML=`<div class="card-head"><div class="card-title">${day} ${todayBadge}</div><div class="card-sub">📅 ${dateLabel} · 🙋 ${assignments[i]}</div>${note?`<div class="card-sub" style="color:#c2410c;font-weight:700;">${note}</div>`:""}</div><div class="task-list"></div>`;
+        card.querySelector(".task-list").appendChild(renderTaskRow(`trash_${i}`,"Take trash to bins",Boolean(tasks[`trash_${i}`])));
+        target.appendChild(card);
+      });
+    }
+
+    /* ══════════ RENDER: BEDROOMS ══════════ */
+    function renderBedrooms(tasks) {
+      const target=document.getElementById("bedroomGrid"); target.innerHTML="";
+      allRooms.forEach(room=>{
+        const card=document.createElement("article");
+        const mine=selectedPerson&&isAssignedToPerson(room.occupants,selectedPerson);
+        const faded=selectedPerson&&!mine;
+        card.className=`room-card${faded?" faded":""}`;
+        const icon=room.vacant?"🚧":"👤";
+        card.innerHTML=`<div class="card-head"><div class="card-title">${icon} ${room.occupants}</div><div class="card-sub">${room.floor} · 📅 anytime this week</div></div><div class="task-list"></div>`;
+        const list=card.querySelector(".task-list");
+        if(room.vacant){ const v=document.createElement("div"); v.style.cssText="color:var(--muted);font-size:0.82rem;padding:4px;"; v.textContent="Unoccupied — excluded from rotation"; list.appendChild(v); }
+        else { room.roomTasks.forEach((t,i)=>{list.appendChild(renderTaskRow(`room_${room.id}_${i}`,t,Boolean(tasks[`room_${room.id}_${i}`])));}); }
+        target.appendChild(card);
+      });
+    }
+
+    /* ══════════ RENDER: SHARED ══════════ */
+    function renderShared(rs,tasks) {
+      const target=document.getElementById("sharedGrid"); target.innerHTML="";
+      const assignments=getSharedAssignments(rs);
+      const ws=getWeekStartSunday(),we=new Date(ws); we.setDate(ws.getDate()+6);
+      const weekLabel=`${shortDate(ws)} – ${shortDate(we)}`;
+      sharedAreas.forEach(area=>{
+        const assigned=assignments[area.id];
+        const mine=selectedPerson&&isAssignedToPerson(assigned,selectedPerson);
+        const faded=selectedPerson&&!mine;
+        const card=document.createElement("article");
+        card.className=`area-card${faded?" faded":""}`;
+        card.innerHTML=`<div class="card-head"><div class="card-title">${area.name}</div><div class="card-sub">🙋 ${assigned} · 📅 ${weekLabel}</div></div><div class="task-list"></div>`;
+        const list=card.querySelector(".task-list");
+        area.tasks.forEach((task,i)=>{list.appendChild(renderTaskRow(`shared_${area.id}_${i}`,task,Boolean(tasks[`shared_${area.id}_${i}`])));});
+        target.appendChild(card);
+      });
+    }
+
+    /* ══════════ HELPERS ══════════ */
+    function escapeHtml(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+
+    function renderTaskRow(id,label,checked) {
+      const row=document.createElement("label");
+      row.className=`task-row${checked?" done":""}`;
+      row.innerHTML=`<input type="checkbox" ${checked?"checked":""} data-task-id="${id}" /><span class="label">${escapeHtml(label)}</span>`;
       return row;
     }
 
-    function renderTrash(rotationState, tasks) {
-      const target = document.getElementById("trashGrid");
-      target.innerHTML = "";
-      const assignments = getTrashAssignments(rotationState);
-      const now = new Date();
-      const dayToday = now.getDay();
-      const map = [6, 0, 1, 2, 3, 4, 5];
-      const todayIndex = map[dayToday];
-
-      DAYS.forEach((day, i) => {
-        const card = document.createElement("article");
-        card.className = `day-card${i === todayIndex ? " today" : ""}`;
-
-        const note = i === 2 ? "Put bins out tonight" : i === 3 ? "Bin collection day" : "";
-        const badge = (i === 2 || i === 3)
-          ? `<span class="pill warn">${note}</span>`
-          : (i === todayIndex ? `<span class="pill green">Today ✓</span>` : "");
-        card.innerHTML = `
-          <div class="day-head">
-            <div class="name">${day}</div>
-            ${badge}
-          </div>
-          <div class="muted">🙋 ${assignments[i]}</div>
-          <div class="task-list"></div>
-        `;
-
-        const id = `trash_${i}`;
-        const taskList = card.querySelector(".task-list");
-        taskList.appendChild(renderTaskRow(id, "Take trash to bins", Boolean(tasks[id])));
-        target.appendChild(card);
-      });
+    function renderProgress(rs,tasks) {
+      const defs=allTaskDefinitions(rs), done=defs.filter(d=>tasks[d.id]).length, total=defs.length, pct=total?Math.round(done/total*100):0;
+      document.getElementById("progressFill").style.width=`${pct}%`;
+      document.getElementById("progressText").textContent=`${done}/${total} done (${pct}%)`;
     }
 
-    function renderRooms(targetId, rooms, tasks) {
-      const target = document.getElementById(targetId);
-      target.innerHTML = "";
-
-      rooms.forEach(room => {
-        const card = document.createElement("article");
-        card.className = "room-card";
-
-        const displayName = room.vacant ? "🚧 Vacant" : `👤 ${room.occupants}`;
-        card.innerHTML = `
-          <div class="room-head">
-            <div class="name">${displayName}</div>
-          </div>
-          <div class="task-list"></div>
-        `;
-
-        const list = card.querySelector(".task-list");
-        room.roomTasks.forEach((t, i) => {
-          const id = `room_${room.id}_${i}`;
-          list.appendChild(renderTaskRow(id, t, Boolean(tasks[id])));
-        });
-
-        if (room.vacant) {
-          const vac = document.createElement("div");
-          vac.className = "muted";
-          vac.textContent = "Unoccupied — excluded from rotation.";
-          vac.style.marginTop = "4px";
-          list.appendChild(vac);
-        }
-
-        target.appendChild(card);
-      });
+    /* ══════════ MAIN RENDER ══════════ */
+    function renderApp() {
+      const rs=advanceRotationToCurrentWeek(), tasks=loadWeekTasks(), now=new Date();
+      document.getElementById("todayDate").textContent=now.toLocaleDateString("en-AU",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+      const ws=getWeekStartSunday(),we=new Date(ws); we.setDate(ws.getDate()+6);
+      document.getElementById("weekRange").textContent=`Week: ${formatDate(ws)} → ${formatDate(we)}`;
+      renderPicker(); renderYourTasks(rs,tasks); renderTrash(rs,tasks); renderBedrooms(tasks); renderShared(rs,tasks); renderProgress(rs,tasks); renderEmailNotice();
     }
 
-    function renderShared(rotationState, tasks) {
-      const target = document.getElementById("sharedGrid");
-      target.innerHTML = "";
-      const assignments = getSharedAssignments(rotationState);
-
-      sharedAreas.forEach(area => {
-        const card = document.createElement("article");
-        card.className = "area-card";
-        card.innerHTML = `
-          <div class="area-head">
-            <div>
-              <div class="name">${area.name}</div>
-              <div class="muted" style="margin-top:3px;">🙋 ${assignments[area.id]}</div>
-            </div>
-          </div>
-          <div class="task-list"></div>
-        `;
-
-        const list = card.querySelector(".task-list");
-        area.tasks.forEach((task, i) => {
-          const id = `shared_${area.id}_${i}`;
-          list.appendChild(renderTaskRow(id, task, Boolean(tasks[id])));
-        });
-
-        target.appendChild(card);
-      });
-    }
-
-    function renderProgress(rotationState, tasks) {
-      const defs = allTaskDefinitions(rotationState);
-      const done = defs.filter(d => tasks[d.id]).length;
-      const total = defs.length;
-      const pct = total ? Math.round((done / total) * 100) : 0;
-      document.getElementById("progressFill").style.width = `${pct}%`;
-      document.getElementById("progressText").textContent = `${done}/${total} done (${pct}%)`;
-    }
-
+    /* ══════════ EVENTS ══════════ */
     function onToggleTask(event) {
-      const input = event.target;
-      if (!(input instanceof HTMLInputElement)) return;
-      if (input.type !== "checkbox") return;
-      const id = input.dataset.taskId;
-      if (!id) return;
-
-      const tasks = loadWeekTasks();
-      tasks[id] = input.checked;
-      saveWeekTasks(tasks);
-
-      const row = input.closest(".task-row");
-      if (row) row.classList.toggle("done", input.checked);
-
-      renderProgress(advanceRotationToCurrentWeek(), tasks);
+      const input=event.target;
+      if(!(input instanceof HTMLInputElement)||input.type!=="checkbox") return;
+      const id=input.dataset.taskId; if(!id) return;
+      const tasks=loadWeekTasks(); tasks[id]=input.checked; saveWeekTasks(tasks);
+      document.querySelectorAll(`input[data-task-id="${CSS.escape(id)}"]`).forEach(cb=>{
+        cb.checked=input.checked;
+        const row=cb.closest(".task-row,.your-task-item");
+        if(row) row.classList.toggle("done",input.checked);
+      });
+      const rs=advanceRotationToCurrentWeek(); renderProgress(rs,tasks); renderYourTasks(rs,tasks);
     }
+    document.addEventListener("change",onToggleTask);
 
-    function resetCurrentWeek() {
-      const ok = window.confirm("Reset all ticked tasks for this week?");
-      if (!ok) return;
-      saveWeekTasks({});
-      renderApp();
-    }
+    /* ══════════ EMAIL ══════════ */
+    function hasEmailSetup() { const c=getEmailConfig(); return Boolean(c&&c.key&&c.service&&c.template); }
+    function renderEmailNotice() { document.getElementById("emailNotice").classList.toggle("hidden",hasEmailSetup()); }
+    function openEmailSetup() { const c=getEmailConfig(); document.getElementById("ejsKey").value=c.key||""; document.getElementById("ejsService").value=c.service||""; document.getElementById("ejsTemplate").value=c.template||""; document.getElementById("emailModal").classList.add("open"); }
+    function closeEmailSetup() { document.getElementById("emailModal").classList.remove("open"); }
+    function saveEmailSetup() { saveJSON("emailjs_config_v1",{key:document.getElementById("ejsKey").value.trim(),service:document.getElementById("ejsService").value.trim(),template:document.getElementById("ejsTemplate").value.trim()}); closeEmailSetup(); renderEmailNotice(); alert("Saved."); }
 
-    function openEmailSetup() {
-      const cfg = getEmailConfig();
-      document.getElementById("ejsKey").value = cfg.key || "";
-      document.getElementById("ejsService").value = cfg.service || "";
-      document.getElementById("ejsTemplate").value = cfg.template || "";
-      document.getElementById("emailModal").classList.add("open");
-    }
-
-    function closeEmailSetup() {
-      document.getElementById("emailModal").classList.remove("open");
-    }
-
-    function saveEmailSetup() {
-      const cfg = {
-        key: document.getElementById("ejsKey").value.trim(),
-        service: document.getElementById("ejsService").value.trim(),
-        template: document.getElementById("ejsTemplate").value.trim()
-      };
-      saveJSON("emailjs_config_v1", cfg);
-      closeEmailSetup();
-      renderEmailNotice();
-      alert("Email setup saved.");
-    }
-
-    function hasEmailSetup() {
-      const cfg = getEmailConfig();
-      return Boolean(cfg && cfg.key && cfg.service && cfg.template);
-    }
-
-    function renderEmailNotice() {
-      const notice = document.getElementById("emailNotice");
-      notice.classList.toggle("hidden", hasEmailSetup());
-    }
-
-    function buildReportHtml(rotationState, tasks) {
-      const defs = allTaskDefinitions(rotationState);
-      const done = defs.filter(d => tasks[d.id]);
-      const pending = defs.filter(d => !tasks[d.id]);
-      const pct = defs.length ? Math.round((done.length / defs.length) * 100) : 0;
-      const weekStart = getWeekStartSunday(new Date());
-      const weekEnd = new Date(weekStart);
-      weekEnd.setDate(weekStart.getDate() + 6);
-
-      function rows(items) {
-        return items.map(item => `
-          <tr>
-            <td style="border:1px solid #ddd;padding:8px;">${escapeHtml(item.section)}</td>
-            <td style="border:1px solid #ddd;padding:8px;">${escapeHtml(item.task)}</td>
-            <td style="border:1px solid #ddd;padding:8px;">${escapeHtml(item.assignedTo)}</td>
-            <td style="border:1px solid #ddd;padding:8px;text-align:center;">${tasks[item.id] ? "Done" : "Not done"}</td>
-          </tr>
-        `).join("");
-      }
-
-      return `
-<!doctype html>
-<html>
-  <body style="font-family:Arial,sans-serif;background:#f6f2ea;padding:20px;">
-    <div style="max-width:900px;margin:0 auto;background:#fff;border:1px solid #ddd;border-radius:10px;overflow:hidden;">
-      <div style="background:#1f2a25;color:#fff;padding:18px;">
-        <h2 style="margin:0 0 6px;">Weekly Cleaning Report</h2>
-        <div style="opacity:.9;">${formatDate(weekStart)} to ${formatDate(weekEnd)}</div>
-        <div style="margin-top:8px;background:#2f7a57;display:inline-block;padding:5px 10px;border-radius:999px;">${done.length}/${defs.length} completed (${pct}%)</div>
-      </div>
-      <div style="padding:16px;">
-        <h3 style="margin-top:0;">Completed</h3>
-        ${done.length ? `<table style="width:100%;border-collapse:collapse;font-size:13px;">${rows(done)}</table>` : "<p>None</p>"}
-        <h3 style="margin-top:18px;">Not completed</h3>
-        ${pending.length ? `<table style="width:100%;border-collapse:collapse;font-size:13px;">${rows(pending)}</table>` : "<p>All tasks complete.</p>"}
-      </div>
-    </div>
-  </body>
-</html>`;
+    function buildReportHtml(rs,tasks) {
+      const defs=allTaskDefinitions(rs), done=defs.filter(d=>tasks[d.id]), pending=defs.filter(d=>!tasks[d.id]);
+      const pct=defs.length?Math.round(done.length/defs.length*100):0;
+      const ws=getWeekStartSunday(),we=new Date(ws); we.setDate(ws.getDate()+6);
+      function rows(items,isDone) { return items.map(item=>`<tr><td style="border:1px solid #ddd;padding:8px;">${escapeHtml(item.assignedTo)}</td><td style="border:1px solid #ddd;padding:8px;">${escapeHtml(item.section)}</td><td style="border:1px solid #ddd;padding:8px;">${escapeHtml(item.task)}</td><td style="border:1px solid #ddd;padding:8px;">${escapeHtml(item.dateStr)}</td><td style="border:1px solid #ddd;padding:8px;text-align:center;color:${isDone?'#059669':'#dc2626'};font-weight:bold;">${isDone?"✅ Done":"❌ Not done"}</td></tr>`).join(""); }
+      return `<!doctype html><html><body style="font-family:Arial,sans-serif;background:#f6f2ea;padding:20px;"><div style="max-width:900px;margin:0 auto;background:#fff;border:1px solid #ddd;border-radius:10px;overflow:hidden;"><div style="background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;padding:18px;"><h2 style="margin:0 0 6px;">🏡 Weekly Cleaning Report</h2><div style="opacity:.85;">${formatDate(ws)} → ${formatDate(we)}</div><div style="margin-top:8px;background:#059669;display:inline-block;padding:5px 12px;border-radius:999px;font-weight:bold;">${done.length}/${defs.length} completed (${pct}%)</div></div><div style="padding:16px;"><h3 style="color:#059669;">✅ Completed (${done.length})</h3>${done.length?`<table style="width:100%;border-collapse:collapse;font-size:13px;"><tr style="background:#f9fafb;"><th style="border:1px solid #ddd;padding:8px;text-align:left;">Person</th><th style="border:1px solid #ddd;padding:8px;text-align:left;">Area</th><th style="border:1px solid #ddd;padding:8px;text-align:left;">Task</th><th style="border:1px solid #ddd;padding:8px;text-align:left;">When</th><th style="border:1px solid #ddd;padding:8px;text-align:center;">Status</th></tr>${rows(done,true)}</table>`:"<p>None yet.</p>"}<h3 style="color:#dc2626;margin-top:18px;">❌ Not Completed (${pending.length})</h3>${pending.length?`<table style="width:100%;border-collapse:collapse;font-size:13px;"><tr style="background:#f9fafb;"><th style="border:1px solid #ddd;padding:8px;text-align:left;">Person</th><th style="border:1px solid #ddd;padding:8px;text-align:left;">Area</th><th style="border:1px solid #ddd;padding:8px;text-align:left;">Task</th><th style="border:1px solid #ddd;padding:8px;text-align:left;">When</th><th style="border:1px solid #ddd;padding:8px;text-align:center;">Status</th></tr>${rows(pending,false)}</table>`:"<p>All tasks complete! 🎉</p>"}</div></div></body></html>`;
     }
 
     async function sendWeeklyReport() {
-      const cfg = getEmailConfig();
-      if (!cfg || !cfg.key || !cfg.service || !cfg.template) {
-        openEmailSetup();
-        alert("Please complete Email setup first.");
-        return;
-      }
-
-      const rotationState = advanceRotationToCurrentWeek();
-      const tasks = loadWeekTasks();
-      const reportHtml = buildReportHtml(rotationState, tasks);
-      const subject = `Cleaning report ${getCurrentWeekKey()}`;
-
+      const cfg=getEmailConfig();
+      if(!cfg||!cfg.key||!cfg.service||!cfg.template){openEmailSetup();alert("Please complete Email setup first.");return;}
+      const rs=advanceRotationToCurrentWeek(), tasks=loadWeekTasks(), reportHtml=buildReportHtml(rs,tasks);
       try {
-        const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            service_id: cfg.service,
-            template_id: cfg.template,
-            user_id: cfg.key,
-            template_params: {
-              to_email: EMAIL_TARGET,
-              subject,
-              report_html: reportHtml
-            }
-          })
-        });
-
-        if (!res.ok) {
-          const body = await res.text();
-          alert(`Email send failed: ${body || res.status}`);
-          return;
-        }
-
-        const autosendKey = `autosent_${getCurrentWeekKey()}`;
-        localStorage.setItem(autosendKey, "true");
-        alert(`Weekly report sent to ${EMAIL_TARGET}`);
-      } catch (err) {
-        alert("Could not send report. Check network and EmailJS config.");
-      }
+        const res=await fetch("https://api.emailjs.com/api/v1.0/email/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({service_id:cfg.service,template_id:cfg.template,user_id:cfg.key,template_params:{to_email:EMAIL_TARGET,subject:`🏡 Cleaning report ${getCurrentWeekKey()}`,report_html:reportHtml}})});
+        if(!res.ok){alert(`Email send failed: ${await res.text()||res.status}`);return;}
+        localStorage.setItem(`autosent_${getCurrentWeekKey()}`,"true");
+        alert(`✅ Weekly report sent to ${EMAIL_TARGET}`);
+      } catch{alert("Could not send report. Check network.");}
     }
 
     async function maybeAutoSendSundayNight() {
-      const now = new Date();
-      const isSunday = now.getDay() === 0;
-      const after8pm = now.getHours() >= 20;
-      if (!isSunday || !after8pm || !hasEmailSetup()) return;
-
-      const autosendKey = `autosent_${getCurrentWeekKey()}`;
-      if (localStorage.getItem(autosendKey) === "true") return;
+      const now=new Date();
+      if(now.getDay()!==0||now.getHours()<20||!hasEmailSetup()) return;
+      if(localStorage.getItem(`autosent_${getCurrentWeekKey()}`)==="true") return;
       await sendWeeklyReport();
     }
 
-    document.addEventListener("change", onToggleTask);
-
+    /* ══════════ BOOT ══════════ */
     initializeDefaultEmailConfig();
     maybeCleanupOldTaskKeys();
     renderApp();
     maybeAutoSendSundayNight();
-    setInterval(maybeAutoSendSundayNight, 60 * 60 * 1000);
+    setInterval(maybeAutoSendSundayNight,36e5);
   </script>
 </body>
 </html>
