@@ -1,1146 +1,948 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>House Cleaning Schedule</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<style>
-  :root {
-    --cream: #f5f0e8;
-    --warm-white: #faf8f4;
-    --charcoal: #1e1e1e;
-    --dark: #2c2a27;
-    --sage: #7a9e7e;
-    --sage-light: #a8c4ab;
-    --sage-dark: #5a7a5e;
-    --terracotta: #c4714a;
-    --gold: #c9a84c;
-    --muted: #8a8478;
-    --border: #d8d0c4;
-    --shadow: rgba(30,30,30,0.08);
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>House Cleaning Schedule</title>
+  <style>
+    :root {
+      --bg: #f6f2ea;
+      --panel: #fffdf9;
+      --ink: #222222;
+      --muted: #6f6a61;
+      --line: #ddd4c7;
+      --accent: #2f7a57;
+      --accent-2: #bf5f3c;
+      --accent-3: #c1a246;
+      --danger: #b21e35;
+    }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+    }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--charcoal);
-    min-height: 100vh;
-    background-image:
-      radial-gradient(ellipse at 10% 20%, rgba(122,158,126,0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 90% 80%, rgba(196,113,74,0.06) 0%, transparent 50%);
-  }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 20%, #e6efe8 0, transparent 45%),
+        radial-gradient(circle at 85% 0%, #f7e9e1 0, transparent 40%),
+        var(--bg);
+      min-height: 100vh;
+    }
 
-  header {
-    background: var(--charcoal);
-    color: var(--cream);
-    padding: 2.5rem 2rem 2rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  header::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 40px,
-      rgba(255,255,255,0.015) 40px,
-      rgba(255,255,255,0.015) 41px
-    );
-  }
-  .header-eyebrow {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--sage-light);
-    margin-bottom: 0.75rem;
-  }
-  header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    font-weight: 900;
-    line-height: 1.1;
-    margin-bottom: 0.5rem;
-  }
-  header h1 span { color: var(--sage-light); }
-  .header-sub {
-    font-size: 0.9rem;
-    color: rgba(245,240,232,0.55);
-    font-weight: 300;
-  }
-  .week-badge {
-    display: inline-block;
-    margin-top: 1.2rem;
-    background: rgba(122,158,126,0.2);
-    border: 1px solid rgba(122,158,126,0.4);
-    color: var(--sage-light);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    padding: 0.4rem 1.1rem;
-    border-radius: 100px;
-  }
+    .shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
 
-  .top-bar {
-    background: var(--warm-white);
-    border-bottom: 1px solid var(--border);
-    padding: 0.75rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-  .progress-wrap {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex: 1;
-    min-width: 200px;
-  }
-  .progress-track {
-    flex: 1;
-    height: 6px;
-    background: var(--border);
-    border-radius: 100px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--sage), var(--sage-light));
-    border-radius: 100px;
-    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
-    width: 0%;
-  }
-  .progress-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-  .btn {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    padding: 0.55rem 1.3rem;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-primary {
-    background: var(--charcoal);
-    color: var(--cream);
-  }
-  .btn-primary:hover { background: var(--dark); transform: translateY(-1px); }
-  .btn-sage {
-    background: var(--sage);
-    color: #fff;
-  }
-  .btn-sage:hover { background: var(--sage-dark); transform: translateY(-1px); }
-  .btn-outline {
-    background: transparent;
-    color: var(--charcoal);
-    border: 1.5px solid var(--border);
-  }
-  .btn-outline:hover { border-color: var(--charcoal); background: var(--cream); }
+    .hero {
+      background: linear-gradient(135deg, #202623, #2f3a33);
+      color: #f7f4ef;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+    }
 
-  main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem;
-  }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 4vw, 2.5rem);
+      letter-spacing: 0.02em;
+    }
 
-  .floor-section {
-    margin-bottom: 3rem;
-  }
-  .floor-heading {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  .floor-heading h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-  .floor-tag {
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 0.3rem 0.8rem;
-    border-radius: 100px;
-  }
-  .floor-tag.down { background: rgba(196,113,74,0.12); color: var(--terracotta); }
-  .floor-tag.up { background: rgba(122,158,126,0.15); color: var(--sage-dark); }
-  .floor-divider { flex: 1; height: 1px; background: var(--border); }
+    .hero .meta {
+      margin-top: 8px;
+      color: #c7d6cc;
+      font-size: 0.95rem;
+    }
 
-  .rooms-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1.25rem;
-  }
+    .toolbar {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-  .room-card {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    transition: box-shadow 0.2s, transform 0.2s;
-    box-shadow: 0 2px 12px var(--shadow);
-  }
-  .room-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px var(--shadow); }
+    .progress {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 220px;
+      flex: 1;
+    }
 
-  .room-card-header {
-    padding: 1.1rem 1.3rem 0.8rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-  .room-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1.2;
-  }
-  .room-occupant {
-    font-size: 0.72rem;
-    color: var(--muted);
-    font-weight: 400;
-    margin-top: 0.2rem;
-  }
-  .room-mini-progress {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--sage);
-    white-space: nowrap;
-    padding-top: 0.2rem;
-  }
-  .room-mini-progress.done { color: var(--sage); }
-  .room-mini-progress.partial { color: var(--gold); }
-  .room-mini-progress.none { color: var(--muted); }
+    .progress-track {
+      flex: 1;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: 999px;
+      overflow: hidden;
+    }
 
-  .task-list { padding: 0.6rem 0.4rem; }
-  .task-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.55rem 0.9rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s;
-    user-select: none;
-  }
-  .task-item:hover { background: rgba(122,158,126,0.07); }
-  .task-item.checked { opacity: 0.6; }
-  .task-item.checked .task-label { text-decoration: line-through; color: var(--muted); }
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #79c79c, #bde6ca);
+      transition: width 200ms ease;
+    }
 
-  .custom-check {
-    width: 18px; height: 18px;
-    border-radius: 5px;
-    border: 2px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.2s;
-    background: #fff;
-  }
-  .task-item.checked .custom-check {
-    background: var(--sage);
-    border-color: var(--sage);
-  }
-  .custom-check svg { opacity: 0; transform: scale(0.5); transition: all 0.2s; }
-  .task-item.checked .custom-check svg { opacity: 1; transform: scale(1); }
-  .task-label {
-    font-size: 0.83rem;
-    font-weight: 400;
-    line-height: 1.3;
-    color: var(--charcoal);
-    transition: all 0.2s;
-  }
+    .btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
-  /* Shared section */
-  .shared-section {
-    margin-bottom: 3rem;
-  }
-  .shared-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.25rem;
-  }
-  .shared-card {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 2px 12px var(--shadow);
-    transition: box-shadow 0.2s, transform 0.2s;
-  }
-  .shared-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px var(--shadow); }
-  .shared-card-header {
-    padding: 1rem 1.3rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-  }
-  .shared-card-title {
-    display: flex; align-items: center; gap: 0.6rem;
-  }
-  .card-icon {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1rem;
-    flex-shrink: 0;
-  }
-  .icon-sage { background: rgba(122,158,126,0.15); }
-  .icon-terra { background: rgba(196,113,74,0.12); }
-  .icon-gold { background: rgba(201,168,76,0.15); }
+    button {
+      border: 1px solid transparent;
+      background: #f7f4ef;
+      color: #202623;
+      border-radius: 9px;
+      padding: 8px 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
-  .shared-card-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-  }
-  .assigned-to {
-    font-size: 0.7rem;
-    color: var(--muted);
-    font-weight: 500;
-  }
+    button:hover {
+      transform: translateY(-1px);
+    }
 
-  /* Trash / Daily section */
-  .daily-section { margin-bottom: 3rem; }
-  .daily-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-  .day-card {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1rem 1.2rem;
-    box-shadow: 0 2px 8px var(--shadow);
-    transition: all 0.2s;
-  }
-  .day-card.today {
-    border-color: var(--sage);
-    box-shadow: 0 0 0 2px rgba(122,158,126,0.25), 0 2px 8px var(--shadow);
-  }
-  .day-card.bin-day { border-color: var(--gold); }
-  .day-card.bin-out { border-color: var(--terracotta); }
-  .day-label {
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.3rem;
-  }
-  .day-label.today-label { color: var(--sage); }
-  .day-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 0.6rem;
-  }
-  .day-person {
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--charcoal);
-    margin-bottom: 0.5rem;
-  }
-  .day-note {
-    font-size: 0.7rem;
-    color: var(--terracotta);
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
+    .btn-primary {
+      background: #2f7a57;
+      color: white;
+    }
 
-  /* Notification banner */
-  .notif {
-    position: fixed;
-    bottom: 2rem; right: 2rem;
-    background: var(--charcoal);
-    color: var(--cream);
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-    z-index: 999;
-    transform: translateY(120%);
-    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
-    max-width: 320px;
-  }
-  .notif.show { transform: translateY(0); }
-  .notif .notif-title { font-weight: 700; margin-bottom: 0.2rem; color: var(--sage-light); }
+    .btn-danger {
+      background: #7a2222;
+      color: white;
+    }
 
-  /* Modal */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(30,30,30,0.55);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--warm-white);
-    border-radius: 20px;
-    padding: 2rem;
-    max-width: 480px;
-    width: 100%;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1);
-  }
-  @keyframes modalIn {
-    from { opacity: 0; transform: scale(0.95) translateY(10px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-  }
-  .modal h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-  }
-  .modal p { font-size: 0.88rem; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6; }
-  .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap; }
-  .modal-input {
-    width: 100%;
-    padding: 0.7rem 1rem;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    background: #fff;
-    color: var(--charcoal);
-    margin-bottom: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .modal-input:focus { border-color: var(--sage); }
-  .modal-label { font-size: 0.78rem; font-weight: 600; color: var(--muted); margin-bottom: 0.4rem; display: block; }
+    .grid {
+      margin-top: 18px;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
 
-  .setup-notice {
-    background: rgba(201,168,76,0.1);
-    border: 1px solid rgba(201,168,76,0.3);
-    border-radius: 10px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 2rem;
-    font-size: 0.82rem;
-    line-height: 1.6;
-    color: var(--dark);
-  }
-  .setup-notice strong { color: var(--gold); }
-  .setup-notice a { color: var(--sage-dark); font-weight: 600; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
 
-  footer {
-    text-align: center;
-    padding: 2rem;
-    color: var(--muted);
-    font-size: 0.75rem;
-    border-top: 1px solid var(--border);
-    margin-top: 1rem;
-  }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+    }
 
-  @media (max-width: 600px) {
-    .top-bar { padding: 0.75rem 1rem; }
-    main { padding: 1.5rem 1rem; }
-    .rooms-grid, .shared-grid { grid-template-columns: 1fr; }
-    .daily-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-</style>
+    .section-title {
+      margin: 28px 0 10px;
+      font-size: 1.35rem;
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 7px;
+    }
+
+    .room-card,
+    .area-card,
+    .day-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .room-head,
+    .area-head,
+    .day-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .name {
+      font-weight: 700;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+
+    .pill.warn {
+      border-color: #e2c784;
+      color: #7a5d1e;
+      background: #fff7e2;
+    }
+
+    .day-card.today {
+      border-color: #93c5aa;
+      box-shadow: inset 0 0 0 1px #93c5aa;
+    }
+
+    .task-list {
+      margin-top: 8px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .task-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 2px;
+      border-radius: 6px;
+    }
+
+    .task-row:hover {
+      background: #f6fbf8;
+    }
+
+    .task-row.done .label {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 16px;
+      z-index: 20;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .card {
+      max-width: 560px;
+      width: 100%;
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+    }
+
+    .field {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .field label {
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    .field input {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      width: 100%;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .notice {
+      margin-top: 12px;
+      background: #fff8df;
+      border: 1px solid #e7d29c;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.9rem;
+    }
+
+    .notice.hidden {
+      display: none;
+    }
+
+    @media (max-width: 680px) {
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btns {
+        justify-content: flex-start;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="shell">
+    <section class="hero">
+      <h1>House Cleaning Schedule</h1>
+      <div class="meta" id="weekRange">Week</div>
+      <div class="meta" id="rotationMeta">Rotation</div>
 
-<header>
-  <div class="header-eyebrow">Weekly Household</div>
-  <h1>Cleaning <span>Schedule</span></h1>
-  <div class="header-sub">Shared responsibilities · Weekly rotation</div>
-  <div class="week-badge" id="weekBadge">Week of —</div>
-</header>
-
-<div class="top-bar">
-  <div class="progress-wrap">
-    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-label" id="progressLabel">0 / 0 done</div>
-  </div>
-  <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
-    <button class="btn btn-outline" onclick="openSetup()">⚙ Email Setup</button>
-    <button class="btn btn-sage" onclick="sendReport()">📧 Send Weekly Report</button>
-    <button class="btn btn-outline" onclick="confirmReset()">↺ Reset Week</button>
-  </div>
-</div>
-
-<main>
-
-  <div class="setup-notice" id="setupNotice">
-    <strong>⚠ First-time setup required:</strong> To enable email reports, click <strong>"⚙ Email Setup"</strong> and enter your EmailJS credentials.
-    Create a free account at <a href="https://www.emailjs.com" target="_blank">emailjs.com</a> — it only takes 2 minutes.
-    <a href="#" onclick="openSetup();return false;">Set up now →</a>
-  </div>
-
-  <!-- DAILY TRASH -->
-  <div class="daily-section">
-    <div class="floor-heading">
-      <h2>🗑 Daily Trash Duty</h2>
-      <div class="floor-tag down">Every Day</div>
-      <div class="floor-divider"></div>
-    </div>
-    <div class="daily-grid" id="trashGrid"></div>
-  </div>
-
-  <!-- DOWNSTAIRS -->
-  <div class="floor-section">
-    <div class="floor-heading">
-      <h2>Downstairs</h2>
-      <div class="floor-tag down">Ground Floor</div>
-      <div class="floor-divider"></div>
-    </div>
-    <div class="rooms-grid" id="downstairsGrid"></div>
-  </div>
-
-  <!-- UPSTAIRS -->
-  <div class="floor-section">
-    <div class="floor-heading">
-      <h2>Upstairs</h2>
-      <div class="floor-tag up">Upper Floor</div>
-      <div class="floor-divider"></div>
-    </div>
-    <div class="rooms-grid" id="upstairsGrid"></div>
-  </div>
-
-  <!-- SHARED AREAS -->
-  <div class="shared-section">
-    <div class="floor-heading">
-      <h2>Shared Areas</h2>
-      <div class="floor-tag up">Rotates Weekly</div>
-      <div class="floor-divider"></div>
-    </div>
-    <div class="shared-grid" id="sharedGrid"></div>
-  </div>
-
-</main>
-
-<footer>Resets every Sunday · Report sends to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9cbc0d8d7dbd8cad2dccbcfd0d5d5dc8980f9d1d6cdd4d8d0d597dad6d4">[email&#160;protected]</a> · Built for the household 🏠</footer>
-
-<!-- Notification -->
-<div class="notif" id="notif">
-  <div class="notif-title" id="notifTitle"></div>
-  <div id="notifMsg"></div>
-</div>
-
-<!-- Reset Modal -->
-<div class="modal-overlay" id="resetModal">
-  <div class="modal">
-    <h3>Reset the Week?</h3>
-    <p>This will uncheck all tasks and start fresh for the new week. This cannot be undone.</p>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeModal('resetModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="doReset()">Yes, Reset</button>
-    </div>
-  </div>
-</div>
-
-<!-- Setup Modal -->
-<div class="modal-overlay" id="setupModal">
-  <div class="modal">
-    <h3>⚙ EmailJS Setup</h3>
-    <p>To send weekly reports, you need a free <a href="https://www.emailjs.com" target="_blank" style="color:var(--sage-dark);font-weight:600;">EmailJS</a> account. After signing up, create a service, an email template, and paste the IDs below. <a href="https://www.emailjs.com/docs/tutorial/overview/" target="_blank" style="color:var(--sage-dark);">View tutorial →</a></p>
-    <label class="modal-label">Public Key (Account → API Keys)</label>
-    <input class="modal-input" id="ejsKey" placeholder="e.g. user_aBcDeFgHiJk..." />
-    <label class="modal-label">Service ID</label>
-    <input class="modal-input" id="ejsService" placeholder="e.g. service_xxxxxx" />
-    <label class="modal-label">Template ID</label>
-    <input class="modal-input" id="ejsTemplate" placeholder="e.g. template_xxxxxx" />
-    <p style="font-size:0.75rem;color:var(--muted);margin-top:-0.5rem;margin-bottom:1rem;">
-      In your EmailJS template, use variable <code style="background:#eee;padding:2px 5px;border-radius:4px;">{{report_html}}</code> as the email body, and <code style="background:#eee;padding:2px 5px;border-radius:4px;">{{to_email}}</code> for the recipient.
-    </p>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeModal('setupModal')">Cancel</button>
-      <button class="btn btn-sage" onclick="saveSetup()">Save</button>
-    </div>
-  </div>
-</div>
-
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ─── DATA ───────────────────────────────────────────────────────────────────
-
-const RESIDENTS = [
-  'Makayla','Henry','Maeve','Megan','Ryan',
-  'Diago','Astrid','Rohain','Svetlana','Ziyue'
-];
-
-// Shared area weekly rotation order
-const SHARED_ROTATION = ['Makayla','Megan','Ryan','Diago','Astrid','Ziyue'];
-
-// Trash daily rotation (Mon–Sun), excluding Henry/Maeve/Rohain/Svetlana (own bathrooms still do trash)
-const TRASH_ROTATION = ['Makayla','Megan','Ryan','Ziyue','Diago','Astrid','Makayla'];
-
-const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-
-const downstairsRooms = [
-  {
-    id: 'room_d1', name: 'Bedroom 1', occupants: 'Makayla',
-    tasks: ['Vacuum/sweep floor','Wipe surfaces & desk','Clean mirrors','Empty personal bin','Tidy & organise'],
-    bathroom: null
-  },
-  {
-    id: 'room_d2', name: 'Bedroom 2', occupants: 'Henry & Maeve',
-    tasks: ['Vacuum/sweep floor','Wipe surfaces & desk','Clean mirrors','Empty personal bin','Tidy & organise'],
-    bathroom: { id: 'bath_d2', label: 'Own Bathroom', tasks: ['Scrub toilet','Clean sink & tap','Scrub shower/bath','Wipe mirrors','Mop floor','Replace towels'] }
-  },
-  {
-    id: 'room_d3', name: 'Bedroom 3', occupants: 'Megan',
-    tasks: ['Vacuum/sweep floor','Wipe surfaces & desk','Clean mirrors','Empty personal bin','Tidy & organise'],
-    bathroom: null
-  },
-  {
-    id: 'room_d4', name: 'Bedroom 4', occupants: 'Ryan',
-    tasks: ['Vacuum/sweep floor','Wipe surfaces & desk','Clean mirrors','Empty personal bin','Tidy & organise'],
-    bathroom: null
-  }
-];
-
-const upstairsRooms = [
-  {
-    id: 'room_u1', name: 'Bedroom 1', occupants: 'Vacant',
-    tasks: ['Check for dust','Air out room','Check for maintenance issues'],
-    bathroom: null, vacant: true
-  },
-  {
-    id: 'room_u2', name: 'Bedroom 2', occupants: 'Diago & Astrid',
-    tasks: ['Vacuum/sweep floor','Wipe surfaces & desk','Clean mirrors','Empty personal bin','Tidy & organise'],
-    bathroom: null
-  },
-  {
-    id: 'room_u3', name: 'Bedroom 3', occupants: 'Rohain & Svetlana',
-    tasks: ['Vacuum/sweep floor','Wipe surfaces & desk','Clean mirrors','Empty personal bin','Tidy & organise'],
-    bathroom: { id: 'bath_u3', label: 'Own Bathroom', tasks: ['Scrub toilet','Clean sink & tap','Scrub shower/bath','Wipe mirrors','Mop floor','Replace towels'] }
-  },
-  {
-    id: 'room_u4', name: 'Bedroom 4', occupants: 'Ziyue',
-    tasks: ['Vacuum/sweep floor','Wipe surfaces & desk','Clean mirrors','Empty personal bin','Tidy & organise'],
-    bathroom: null
-  }
-];
-
-const sharedAreas = [
-  {
-    id: 'shared_bath_down', name: 'Downstairs Shared Bathroom',
-    icon: '🚿', iconClass: 'icon-sage',
-    tasks: ['Scrub toilet','Clean sink & taps','Scrub shower','Wipe mirrors','Mop floor','Wipe surfaces','Replace hand towels']
-  },
-  {
-    id: 'shared_bath_up', name: 'Upstairs Shared Bathroom',
-    icon: '🛁', iconClass: 'icon-sage',
-    tasks: ['Scrub toilet','Clean sink & taps','Scrub shower','Wipe mirrors','Mop floor','Wipe surfaces','Replace hand towels']
-  },
-  {
-    id: 'shared_kitchen', name: 'Kitchen',
-    icon: '🍳', iconClass: 'icon-terra',
-    tasks: ['Wipe benchtops & splashback','Clean stovetop & oven exterior','Wipe microwave inside & out','Clean sink & taps','Mop floor','Wipe cabinet fronts','Empty & clean bin','Restock dish soap/sponge']
-  },
-  {
-    id: 'shared_laundry', name: 'Laundry Room',
-    icon: '🧺', iconClass: 'icon-gold',
-    tasks: ['Wipe washer & dryer exteriors','Clean lint filter','Wipe sink','Mop floor','Organise shelves','Wipe surfaces']
-  },
-  {
-    id: 'shared_veranda_down', name: 'Downstairs Veranda',
-    icon: '🌿', iconClass: 'icon-sage',
-    tasks: ['Sweep floor','Wipe furniture','Remove cobwebs','Tidy outdoor items']
-  },
-  {
-    id: 'shared_veranda_up', name: 'Upstairs Veranda',
-    icon: '🌤', iconClass: 'icon-gold',
-    tasks: ['Sweep floor','Wipe furniture','Remove cobwebs','Tidy outdoor items']
-  }
-];
-
-// ─── STATE ──────────────────────────────────────────────────────────────────
-
-function getWeekKey() {
-  // Returns ISO week string like "2025-W03"
-  const now = new Date();
-  const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
-  const day = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - day);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2,'0')}`;
-}
-
-function getWeekStart() {
-  // Get the most recent Sunday
-  const now = new Date();
-  const day = now.getDay(); // 0=Sun
-  const sunday = new Date(now);
-  sunday.setDate(now.getDate() - day);
-  return sunday;
-}
-
-function getWeekRotationIndex() {
-  // Rotate shared assignments based on week number
-  const weekKey = getWeekKey();
-  const weekNum = parseInt(weekKey.split('-W')[1], 10);
-  return weekNum % SHARED_ROTATION.length;
-}
-
-function loadState() {
-  const key = `cleaningSchedule_${getWeekKey()}`;
-  const raw = localStorage.getItem(key);
-  return raw ? JSON.parse(raw) : {};
-}
-
-function saveState(state) {
-  const key = `cleaningSchedule_${getWeekKey()}`;
-  localStorage.setItem(key, JSON.stringify(state));
-}
-
-let state = loadState();
-
-// ─── RENDER ─────────────────────────────────────────────────────────────────
-
-function renderAll() {
-  renderWeekBadge();
-  renderTrash();
-  renderRooms('downstairsGrid', downstairsRooms);
-  renderRooms('upstairsGrid', upstairsRooms);
-  renderShared();
-  updateProgress();
-  checkSetupNotice();
-}
-
-function renderWeekBadge() {
-  const ws = getWeekStart();
-  const we = new Date(ws); we.setDate(ws.getDate() + 6);
-  const fmt = d => d.toLocaleDateString('en-AU', { day:'numeric', month:'short' });
-  document.getElementById('weekBadge').textContent = `Week of ${fmt(ws)} – ${fmt(we)}`;
-}
-
-function renderTrash() {
-  const grid = document.getElementById('trashGrid');
-  const today = new Date().getDay(); // 0=Sun
-  const dayMap = [6,0,1,2,3,4,5]; // Sun=6 in our Mon-based days array index
-  const todayIdx = dayMap[today]; // index into DAYS (Mon=0...Sun=6)
-  grid.innerHTML = '';
-  DAYS.forEach((day, i) => {
-    const person = TRASH_ROTATION[i];
-    const taskId = `trash_${i}`;
-    const checked = state[taskId] || false;
-    const isToday = i === todayIdx;
-    const isBinDay = i === 3; // Thursday
-    const isBinOut = i === 2; // Wednesday
-
-    const card = document.createElement('div');
-    card.className = `day-card${isToday ? ' today' : ''}${isBinDay ? ' bin-day' : ''}${isBinOut ? ' bin-out' : ''}`;
-    card.innerHTML = `
-      <div class="day-label ${isToday ? 'today-label' : ''}">${isToday ? '▶ TODAY' : day.toUpperCase().slice(0,3)}</div>
-      <div class="day-name">${day}</div>
-      ${isBinOut ? `<div class="day-note">🗑 Put bins out tonight!</div>` : ''}
-      ${isBinDay ? `<div class="day-note">♻ Bin collection day</div>` : ''}
-      <div class="day-person">🧑 ${person}</div>
-      <div class="task-item${checked ? ' checked' : ''}" onclick="toggleTask('${taskId}', this)" style="padding:0.4rem 0.5rem;">
-        <div class="custom-check">
-          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+      <div class="toolbar">
+        <div class="progress">
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <div id="progressText">0/0</div>
         </div>
-        <span class="task-label">Take trash to bins</span>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-}
 
-function renderRooms(gridId, rooms) {
-  const grid = document.getElementById(gridId);
-  grid.innerHTML = '';
-  rooms.forEach(room => {
-    const card = document.createElement('div');
-    card.className = 'room-card';
-
-    const allTaskIds = room.tasks.map((_, ti) => `${room.id}_task_${ti}`);
-    const bathTaskIds = room.bathroom ? room.bathroom.tasks.map((_, ti) => `${room.bathroom.id}_task_${ti}`) : [];
-    const allIds = [...allTaskIds, ...bathTaskIds];
-    const doneCount = allIds.filter(id => state[id]).length;
-    const totalCount = allIds.length;
-
-    let progressClass = doneCount === 0 ? 'none' : doneCount === totalCount ? 'done' : 'partial';
-
-    card.innerHTML = `
-      <div class="room-card-header">
-        <div>
-          <div class="room-name">${room.name}</div>
-          <div class="room-occupant">${room.vacant ? '— Vacant —' : room.occupants}</div>
+        <div class="btns">
+          <button onclick="openEmailSetup()">Email setup</button>
+          <button class="btn-primary" onclick="sendWeeklyReport()">Send weekly report</button>
+          <button class="btn-danger" onclick="resetCurrentWeek()">Reset this week</button>
         </div>
-        <div class="room-mini-progress ${progressClass}">${doneCount}/${totalCount}</div>
       </div>
-      <div class="task-list">
-        ${room.tasks.map((task, ti) => {
-          const id = `${room.id}_task_${ti}`;
-          const checked = state[id] || false;
-          return `<div class="task-item${checked ? ' checked' : ''}" onclick="toggleTask('${id}', this)">
-            <div class="custom-check">
-              <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                <path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <span class="task-label">${task}</span>
-          </div>`;
-        }).join('')}
-        ${room.bathroom ? `
-          <div style="padding:0.5rem 0.9rem 0.2rem; font-size:0.68rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);">${room.bathroom.label}</div>
-          ${room.bathroom.tasks.map((task, ti) => {
-            const id = `${room.bathroom.id}_task_${ti}`;
-            const checked = state[id] || false;
-            return `<div class="task-item${checked ? ' checked' : ''}" onclick="toggleTask('${id}', this)">
-              <div class="custom-check">
-                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                  <path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-              <span class="task-label">${task}</span>
-            </div>`;
-          }).join('')}
-        ` : ''}
+    </section>
+
+    <div class="notice" id="emailNotice">
+      Email report requires EmailJS setup (public key, service ID, template ID). It can then auto-send on Sunday night and manual send anytime.
+    </div>
+
+    <h2 class="section-title">Daily Trash Duty</h2>
+    <section class="grid" id="trashGrid"></section>
+
+    <h2 class="section-title">Downstairs Bedrooms</h2>
+    <section class="grid" id="downstairsGrid"></section>
+
+    <h2 class="section-title">Upstairs Bedrooms</h2>
+    <section class="grid" id="upstairsGrid"></section>
+
+    <h2 class="section-title">Shared Areas (Weekly Rotation)</h2>
+    <section class="grid" id="sharedGrid"></section>
+
+    <div class="footer-note">
+      Weekly reset day: Sunday. Trash bins must be put out Wednesday night. Bin collection day: Thursday.
+    </div>
+  </div>
+
+  <div class="modal" id="emailModal">
+    <div class="card">
+      <h3>Email report setup</h3>
+      <p class="muted">Use EmailJS template variables: <code>{{to_email}}</code>, <code>{{subject}}</code>, <code>{{report_html}}</code>.</p>
+
+      <div class="field">
+        <label for="ejsKey">Public key</label>
+        <input id="ejsKey" />
       </div>
-    `;
-    grid.appendChild(card);
-  });
-}
 
-function getSharedAssignments() {
-  const idx = getWeekRotationIndex();
-  // Assign 6 shared areas to 6 rotation people (one each this week)
-  const assignments = {};
-  sharedAreas.forEach((area, i) => {
-    assignments[area.id] = SHARED_ROTATION[(idx + i) % SHARED_ROTATION.length];
-  });
-  return assignments;
-}
-
-function renderShared() {
-  const grid = document.getElementById('sharedGrid');
-  grid.innerHTML = '';
-  const assignments = getSharedAssignments();
-
-  sharedAreas.forEach(area => {
-    const assigned = assignments[area.id];
-    const allIds = area.tasks.map((_, ti) => `${area.id}_task_${ti}`);
-    const doneCount = allIds.filter(id => state[id]).length;
-    const totalCount = allIds.length;
-    let progressClass = doneCount === 0 ? 'none' : doneCount === totalCount ? 'done' : 'partial';
-
-    const card = document.createElement('div');
-    card.className = 'shared-card';
-    card.innerHTML = `
-      <div class="shared-card-header">
-        <div class="shared-card-title">
-          <div class="card-icon ${area.iconClass}">${area.icon}</div>
-          <div>
-            <div class="shared-card-name">${area.name}</div>
-            <div class="assigned-to">Assigned to: <strong>${assigned}</strong></div>
-          </div>
-        </div>
-        <div class="room-mini-progress ${progressClass}">${doneCount}/${totalCount}</div>
+      <div class="field">
+        <label for="ejsService">Service ID</label>
+        <input id="ejsService" />
       </div>
-      <div class="task-list">
-        ${area.tasks.map((task, ti) => {
-          const id = `${area.id}_task_${ti}`;
-          const checked = state[id] || false;
-          return `<div class="task-item${checked ? ' checked' : ''}" onclick="toggleTask('${id}', this)">
-            <div class="custom-check">
-              <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                <path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <span class="task-label">${task}</span>
-          </div>`;
-        }).join('')}
+
+      <div class="field">
+        <label for="ejsTemplate">Template ID</label>
+        <input id="ejsTemplate" />
       </div>
-    `;
-    grid.appendChild(card);
-  });
-}
 
-// ─── INTERACTIONS ────────────────────────────────────────────────────────────
+      <div class="row">
+        <button onclick="closeEmailSetup()">Cancel</button>
+        <button class="btn-primary" onclick="saveEmailSetup()">Save</button>
+      </div>
+    </div>
+  </div>
 
-function toggleTask(id, el) {
-  state[id] = !state[id];
-  saveState(state);
-  el.classList.toggle('checked', state[id]);
-  updateProgress();
-  // Update mini progress counters without full re-render
-  updateMiniProgress();
-}
+  <script>
+    const EMAIL_TARGET = "ryanbaskerville09@hotmail.com";
 
-function updateMiniProgress() {
-  // Re-render just the progress numbers
-  // Simpler: just re-render everything (fast enough)
-  renderAll();
-}
+    const OCCUPIED_RESIDENTS = [
+      "Makayla",
+      "Henry",
+      "Maeve",
+      "Megan",
+      "Ryan",
+      "Diago",
+      "Astrid",
+      "Rohain",
+      "Svetlana",
+      "Ziyue"
+    ];
 
-function getAllTaskIds() {
-  const ids = [];
-  // Trash
-  DAYS.forEach((_, i) => ids.push(`trash_${i}`));
-  // Room tasks
-  [...downstairsRooms, ...upstairsRooms].forEach(room => {
-    room.tasks.forEach((_, ti) => ids.push(`${room.id}_task_${ti}`));
-    if (room.bathroom) room.bathroom.tasks.forEach((_, ti) => ids.push(`${room.bathroom.id}_task_${ti}`));
-  });
-  // Shared areas
-  sharedAreas.forEach(area => area.tasks.forEach((_, ti) => ids.push(`${area.id}_task_${ti}`)));
-  return ids;
-}
+    const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-function updateProgress() {
-  const ids = getAllTaskIds();
-  const done = ids.filter(id => state[id]).length;
-  const total = ids.length;
-  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressLabel').textContent = `${done} / ${total} done (${pct}%)`;
-}
+    const downstairsRooms = [
+      {
+        id: "d1",
+        name: "Bedroom 1",
+        occupants: "Makayla",
+        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
+        ownBathroomTasks: []
+      },
+      {
+        id: "d2",
+        name: "Bedroom 2",
+        occupants: "Henry and Maeve",
+        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
+        ownBathroomTasks: ["Toilet", "Sink and mirror", "Shower and floor"]
+      },
+      {
+        id: "d3",
+        name: "Bedroom 3",
+        occupants: "Megan",
+        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
+        ownBathroomTasks: []
+      },
+      {
+        id: "d4",
+        name: "Bedroom 4",
+        occupants: "Ryan",
+        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
+        ownBathroomTasks: []
+      }
+    ];
 
-// ─── MODALS ──────────────────────────────────────────────────────────────────
+    const upstairsRooms = [
+      {
+        id: "u1",
+        name: "Bedroom 1",
+        occupants: "Vacant",
+        roomTasks: ["No regular task - unoccupied"],
+        ownBathroomTasks: [],
+        vacant: true
+      },
+      {
+        id: "u2",
+        name: "Bedroom 2",
+        occupants: "Diago and Astrid",
+        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
+        ownBathroomTasks: []
+      },
+      {
+        id: "u3",
+        name: "Bedroom 3",
+        occupants: "Rohain and Svetlana",
+        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
+        ownBathroomTasks: ["Toilet", "Sink and mirror", "Shower and floor"]
+      },
+      {
+        id: "u4",
+        name: "Bedroom 4",
+        occupants: "Ziyue",
+        roomTasks: ["Keep tidy and clear floor", "Dust and wipe surfaces"],
+        ownBathroomTasks: []
+      }
+    ];
 
-function openSetup() {
-  const ejs = JSON.parse(localStorage.getItem('ejsConfig') || '{}');
-  document.getElementById('ejsKey').value = ejs.key || '';
-  document.getElementById('ejsService').value = ejs.service || '';
-  document.getElementById('ejsTemplate').value = ejs.template || '';
-  document.getElementById('setupModal').classList.add('open');
-}
-function saveSetup() {
-  const cfg = {
-    key: document.getElementById('ejsKey').value.trim(),
-    service: document.getElementById('ejsService').value.trim(),
-    template: document.getElementById('ejsTemplate').value.trim()
-  };
-  localStorage.setItem('ejsConfig', JSON.stringify(cfg));
-  closeModal('setupModal');
-  checkSetupNotice();
-  showNotif('Saved!', 'EmailJS credentials saved. You can now send reports.');
-}
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-function confirmReset() {
-  document.getElementById('resetModal').classList.add('open');
-}
-function doReset() {
-  state = {};
-  saveState(state);
-  closeModal('resetModal');
-  renderAll();
-  showNotif('Week Reset', 'All tasks cleared for the new week!');
-}
+    const sharedAreas = [
+      { id: "shared_bath_down", name: "Downstairs shared bathroom", tasks: ["Toilet", "Sink and mirror", "Shower and floor"] },
+      { id: "shared_bath_up", name: "Upstairs shared bathroom", tasks: ["Toilet", "Sink and mirror", "Shower and floor"] },
+      { id: "shared_kitchen", name: "Kitchen", tasks: ["Benches and sink", "Stovetop and fronts", "Floor and bins"] },
+      { id: "shared_laundry", name: "Laundry room", tasks: ["Wipe machines", "Sink and surfaces", "Floor"] },
+      { id: "shared_veranda_down", name: "Downstairs veranda", tasks: ["Sweep", "Wipe furniture", "Tidy items"] },
+      { id: "shared_veranda_up", name: "Upstairs veranda", tasks: ["Sweep", "Wipe furniture", "Tidy items"] }
+    ];
 
-function checkSetupNotice() {
-  const ejs = JSON.parse(localStorage.getItem('ejsConfig') || '{}');
-  document.getElementById('setupNotice').style.display = (ejs.key && ejs.service && ejs.template) ? 'none' : '';
-}
+    function toDateOnlyKey(dateObj) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
 
-// ─── NOTIFICATIONS ───────────────────────────────────────────────────────────
+    function getWeekStartSunday(date = new Date()) {
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() - d.getDay());
+      return d;
+    }
 
-function showNotif(title, msg) {
-  document.getElementById('notifTitle').textContent = title;
-  document.getElementById('notifMsg').textContent = msg;
-  const n = document.getElementById('notif');
-  n.classList.add('show');
-  setTimeout(() => n.classList.remove('show'), 4000);
-}
+    function getCurrentWeekKey() {
+      return toDateOnlyKey(getWeekStartSunday(new Date()));
+    }
 
-// ─── EMAIL REPORT ────────────────────────────────────────────────────────────
+    function weeksBetween(startKey, endKey) {
+      const start = new Date(`${startKey}T00:00:00`);
+      const end = new Date(`${endKey}T00:00:00`);
+      const ms = end.getTime() - start.getTime();
+      if (ms <= 0) return 0;
+      return Math.floor(ms / (7 * 24 * 60 * 60 * 1000));
+    }
 
-function buildReportHTML() {
-  const ws = getWeekStart();
-  const we = new Date(ws); we.setDate(ws.getDate() + 6);
-  const fmt = d => d.toLocaleDateString('en-AU', { day:'numeric', month:'long', year:'numeric' });
-  const assignments = getSharedAssignments();
+    function loadJSON(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        return JSON.parse(raw);
+      } catch {
+        return fallback;
+      }
+    }
 
-  const allIds = getAllTaskIds();
-  const doneIds = allIds.filter(id => state[id]);
-  const totalPct = allIds.length > 0 ? Math.round((doneIds.length / allIds.length) * 100) : 0;
+    function saveJSON(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
 
-  function sectionRows(items) {
-    return items.map(item => {
-      const checked = state[item.id] ? '✅' : '❌';
-      return `<tr><td style="padding:6px 12px;border-bottom:1px solid #eee;">${item.section}</td>
-              <td style="padding:6px 12px;border-bottom:1px solid #eee;">${item.task}</td>
-              <td style="padding:6px 12px;border-bottom:1px solid #eee;text-align:center;">${item.assigned}</td>
-              <td style="padding:6px 12px;border-bottom:1px solid #eee;text-align:center;">${checked}</td></tr>`;
-    }).join('');
-  }
-
-  let rows = [];
-
-  // Trash
-  DAYS.forEach((day, i) => {
-    rows.push({ section: `Trash – ${day}`, task: 'Take trash to bins', assigned: TRASH_ROTATION[i], id: `trash_${i}` });
-  });
-  // Rooms
-  [...downstairsRooms, ...upstairsRooms].forEach(room => {
-    room.tasks.forEach((task, ti) => {
-      rows.push({ section: `${room.name} (${room.occupants})`, task, assigned: room.occupants, id: `${room.id}_task_${ti}` });
-    });
-    if (room.bathroom) {
-      room.bathroom.tasks.forEach((task, ti) => {
-        rows.push({ section: `${room.name} – ${room.bathroom.label}`, task, assigned: room.occupants, id: `${room.bathroom.id}_task_${ti}` });
+    function getRotationState() {
+      return loadJSON("rotationState_v1", {
+        version: 1,
+        anchorWeekKey: getCurrentWeekKey(),
+        sharedStartIndex: 0,
+        trashStartIndex: 0,
+        lastSharedAssigned: null,
+        lastTrashAssigned: null
       });
     }
-  });
-  // Shared
-  sharedAreas.forEach(area => {
-    area.tasks.forEach((task, ti) => {
-      rows.push({ section: area.name, task, assigned: assignments[area.id], id: `${area.id}_task_${ti}` });
-    });
-  });
 
-  const doneRows = rows.filter(r => state[r.id]);
-  const notDoneRows = rows.filter(r => !state[r.id]);
+    function saveRotationState(state) {
+      saveJSON("rotationState_v1", state);
+    }
 
-  const tableStyle = `width:100%;border-collapse:collapse;font-family:Georgia,serif;font-size:13px;margin-bottom:24px;`;
-  const thStyle = `background:#1e1e1e;color:#f5f0e8;padding:8px 12px;text-align:left;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;`;
+    function advanceRotationToCurrentWeek() {
+      const state = getRotationState();
+      const currentWeekKey = getCurrentWeekKey();
+      const weekJumps = weeksBetween(state.anchorWeekKey, currentWeekKey);
 
-  return `
-<!DOCTYPE html>
+      if (weekJumps > 0) {
+        const n = OCCUPIED_RESIDENTS.length;
+        state.sharedStartIndex = (state.sharedStartIndex + (sharedAreas.length * weekJumps)) % n;
+        state.trashStartIndex = (state.trashStartIndex + (DAYS.length * weekJumps)) % n;
+        state.anchorWeekKey = currentWeekKey;
+      }
+
+      const currentShared = [];
+      for (let i = 0; i < sharedAreas.length; i += 1) {
+        currentShared.push(OCCUPIED_RESIDENTS[(state.sharedStartIndex + i) % OCCUPIED_RESIDENTS.length]);
+      }
+      state.lastSharedAssigned = currentShared[currentShared.length - 1];
+
+      const currentTrash = [];
+      for (let d = 0; d < DAYS.length; d += 1) {
+        currentTrash.push(OCCUPIED_RESIDENTS[(state.trashStartIndex + d) % OCCUPIED_RESIDENTS.length]);
+      }
+      state.lastTrashAssigned = currentTrash[currentTrash.length - 1];
+
+      saveRotationState(state);
+      return state;
+    }
+
+    function getWeekTasksKey() {
+      return `tasks_${getCurrentWeekKey()}`;
+    }
+
+    function loadWeekTasks() {
+      return loadJSON(getWeekTasksKey(), {});
+    }
+
+    function saveWeekTasks(tasks) {
+      saveJSON(getWeekTasksKey(), tasks);
+    }
+
+    function maybeCleanupOldTaskKeys() {
+      const prefix = "tasks_";
+      const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix)).sort();
+      const keepCount = 12;
+      if (keys.length <= keepCount) return;
+      const remove = keys.slice(0, keys.length - keepCount);
+      remove.forEach(k => localStorage.removeItem(k));
+    }
+
+    function getSharedAssignments(rotationState) {
+      const out = {};
+      sharedAreas.forEach((area, index) => {
+        out[area.id] = OCCUPIED_RESIDENTS[(rotationState.sharedStartIndex + index) % OCCUPIED_RESIDENTS.length];
+      });
+      return out;
+    }
+
+    function getTrashAssignments(rotationState) {
+      return DAYS.map((_, index) => OCCUPIED_RESIDENTS[(rotationState.trashStartIndex + index) % OCCUPIED_RESIDENTS.length]);
+    }
+
+    function allTaskDefinitions(rotationState) {
+      const defs = [];
+      const trashAssignments = getTrashAssignments(rotationState);
+
+      DAYS.forEach((day, i) => {
+        defs.push({
+          id: `trash_${i}`,
+          section: `Trash - ${day}`,
+          task: "Take trash to bins",
+          assignedTo: trashAssignments[i]
+        });
+      });
+
+      [...downstairsRooms, ...upstairsRooms].forEach(room => {
+        room.roomTasks.forEach((task, i) => {
+          defs.push({
+            id: `room_${room.id}_${i}`,
+            section: `${room.name} (${room.occupants})`,
+            task,
+            assignedTo: room.occupants
+          });
+        });
+
+        room.ownBathroomTasks.forEach((task, i) => {
+          defs.push({
+            id: `bath_${room.id}_${i}`,
+            section: `${room.name} own bathroom`,
+            task,
+            assignedTo: room.occupants
+          });
+        });
+      });
+
+      const sharedAssignments = getSharedAssignments(rotationState);
+      sharedAreas.forEach(area => {
+        area.tasks.forEach((task, i) => {
+          defs.push({
+            id: `shared_${area.id}_${i}`,
+            section: area.name,
+            task,
+            assignedTo: sharedAssignments[area.id]
+          });
+        });
+      });
+
+      return defs;
+    }
+
+    function formatDate(d) {
+      return d.toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function renderApp() {
+      const rotationState = advanceRotationToCurrentWeek();
+      const tasks = loadWeekTasks();
+
+      const weekStart = getWeekStartSunday(new Date());
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
+      document.getElementById("weekRange").textContent = `${formatDate(weekStart)} to ${formatDate(weekEnd)}`;
+      document.getElementById("rotationMeta").textContent = `Fair rotation memory: last shared person ${rotationState.lastSharedAssigned || "n/a"}, last trash person ${rotationState.lastTrashAssigned || "n/a"}`;
+
+      renderTrash(rotationState, tasks);
+      renderRooms("downstairsGrid", downstairsRooms, tasks);
+      renderRooms("upstairsGrid", upstairsRooms, tasks);
+      renderShared(rotationState, tasks);
+      renderProgress(rotationState, tasks);
+      renderEmailNotice();
+    }
+
+    function renderTaskRow(id, label, checked) {
+      const row = document.createElement("label");
+      row.className = `task-row${checked ? " done" : ""}`;
+      row.innerHTML = `
+        <input type="checkbox" ${checked ? "checked" : ""} data-task-id="${id}" />
+        <span class="label">${escapeHtml(label)}</span>
+      `;
+      return row;
+    }
+
+    function renderTrash(rotationState, tasks) {
+      const target = document.getElementById("trashGrid");
+      target.innerHTML = "";
+      const assignments = getTrashAssignments(rotationState);
+      const now = new Date();
+      const dayToday = now.getDay();
+      const map = [6, 0, 1, 2, 3, 4, 5];
+      const todayIndex = map[dayToday];
+
+      DAYS.forEach((day, i) => {
+        const card = document.createElement("article");
+        card.className = `day-card${i === todayIndex ? " today" : ""}`;
+
+        const note = i === 2 ? "Put bins out tonight" : i === 3 ? "Bin collection day" : "";
+        card.innerHTML = `
+          <div class="day-head">
+            <div class="name">${day}</div>
+            ${i === 2 || i === 3 ? `<span class="pill warn">${note}</span>` : ""}
+          </div>
+          <div class="muted">Assigned: ${assignments[i]}</div>
+          <div class="task-list"></div>
+        `;
+
+        const id = `trash_${i}`;
+        const taskList = card.querySelector(".task-list");
+        taskList.appendChild(renderTaskRow(id, "Take trash to bins", Boolean(tasks[id])));
+        target.appendChild(card);
+      });
+    }
+
+    function renderRooms(targetId, rooms, tasks) {
+      const target = document.getElementById(targetId);
+      target.innerHTML = "";
+
+      rooms.forEach(room => {
+        const card = document.createElement("article");
+        card.className = "room-card";
+
+        card.innerHTML = `
+          <div class="room-head">
+            <div class="name">${room.name}</div>
+            <span class="pill">${room.occupants}</span>
+          </div>
+          <div class="task-list"></div>
+        `;
+
+        const list = card.querySelector(".task-list");
+        room.roomTasks.forEach((t, i) => {
+          const id = `room_${room.id}_${i}`;
+          list.appendChild(renderTaskRow(id, t, Boolean(tasks[id])));
+        });
+
+        if (room.ownBathroomTasks.length > 0) {
+          const own = document.createElement("div");
+          own.className = "muted";
+          own.style.marginTop = "6px";
+          own.textContent = "Own bathroom:";
+          list.appendChild(own);
+
+          room.ownBathroomTasks.forEach((t, i) => {
+            const id = `bath_${room.id}_${i}`;
+            list.appendChild(renderTaskRow(id, t, Boolean(tasks[id])));
+          });
+        }
+
+        if (room.vacant) {
+          const vac = document.createElement("div");
+          vac.className = "muted";
+          vac.textContent = "This room is unoccupied and excluded from shared rotation.";
+          vac.style.marginTop = "4px";
+          list.appendChild(vac);
+        }
+
+        target.appendChild(card);
+      });
+    }
+
+    function renderShared(rotationState, tasks) {
+      const target = document.getElementById("sharedGrid");
+      target.innerHTML = "";
+      const assignments = getSharedAssignments(rotationState);
+
+      sharedAreas.forEach(area => {
+        const card = document.createElement("article");
+        card.className = "area-card";
+        card.innerHTML = `
+          <div class="area-head">
+            <div class="name">${area.name}</div>
+            <span class="pill">Assigned: ${assignments[area.id]}</span>
+          </div>
+          <div class="task-list"></div>
+        `;
+
+        const list = card.querySelector(".task-list");
+        area.tasks.forEach((task, i) => {
+          const id = `shared_${area.id}_${i}`;
+          list.appendChild(renderTaskRow(id, task, Boolean(tasks[id])));
+        });
+
+        target.appendChild(card);
+      });
+    }
+
+    function renderProgress(rotationState, tasks) {
+      const defs = allTaskDefinitions(rotationState);
+      const done = defs.filter(d => tasks[d.id]).length;
+      const total = defs.length;
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      document.getElementById("progressFill").style.width = `${pct}%`;
+      document.getElementById("progressText").textContent = `${done}/${total} done (${pct}%)`;
+    }
+
+    function onToggleTask(event) {
+      const input = event.target;
+      if (!(input instanceof HTMLInputElement)) return;
+      if (input.type !== "checkbox") return;
+      const id = input.dataset.taskId;
+      if (!id) return;
+
+      const tasks = loadWeekTasks();
+      tasks[id] = input.checked;
+      saveWeekTasks(tasks);
+
+      const row = input.closest(".task-row");
+      if (row) row.classList.toggle("done", input.checked);
+
+      renderProgress(advanceRotationToCurrentWeek(), tasks);
+    }
+
+    function resetCurrentWeek() {
+      const ok = window.confirm("Reset all ticked tasks for this week?");
+      if (!ok) return;
+      saveWeekTasks({});
+      renderApp();
+    }
+
+    function openEmailSetup() {
+      const cfg = loadJSON("emailjs_config_v1", { key: "", service: "", template: "" });
+      document.getElementById("ejsKey").value = cfg.key || "";
+      document.getElementById("ejsService").value = cfg.service || "";
+      document.getElementById("ejsTemplate").value = cfg.template || "";
+      document.getElementById("emailModal").classList.add("open");
+    }
+
+    function closeEmailSetup() {
+      document.getElementById("emailModal").classList.remove("open");
+    }
+
+    function saveEmailSetup() {
+      const cfg = {
+        key: document.getElementById("ejsKey").value.trim(),
+        service: document.getElementById("ejsService").value.trim(),
+        template: document.getElementById("ejsTemplate").value.trim()
+      };
+      saveJSON("emailjs_config_v1", cfg);
+      closeEmailSetup();
+      renderEmailNotice();
+      alert("Email setup saved.");
+    }
+
+    function hasEmailSetup() {
+      const cfg = loadJSON("emailjs_config_v1", null);
+      return Boolean(cfg && cfg.key && cfg.service && cfg.template);
+    }
+
+    function renderEmailNotice() {
+      const notice = document.getElementById("emailNotice");
+      notice.classList.toggle("hidden", hasEmailSetup());
+    }
+
+    function buildReportHtml(rotationState, tasks) {
+      const defs = allTaskDefinitions(rotationState);
+      const done = defs.filter(d => tasks[d.id]);
+      const pending = defs.filter(d => !tasks[d.id]);
+      const pct = defs.length ? Math.round((done.length / defs.length) * 100) : 0;
+      const weekStart = getWeekStartSunday(new Date());
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
+
+      function rows(items) {
+        return items.map(item => `
+          <tr>
+            <td style="border:1px solid #ddd;padding:8px;">${escapeHtml(item.section)}</td>
+            <td style="border:1px solid #ddd;padding:8px;">${escapeHtml(item.task)}</td>
+            <td style="border:1px solid #ddd;padding:8px;">${escapeHtml(item.assignedTo)}</td>
+            <td style="border:1px solid #ddd;padding:8px;text-align:center;">${tasks[item.id] ? "Done" : "Not done"}</td>
+          </tr>
+        `).join("");
+      }
+
+      return `
+<!doctype html>
 <html>
-<head><meta charset="UTF-8"></head>
-<body style="background:#f5f0e8;padding:32px;font-family:Georgia,serif;">
-  <div style="max-width:700px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.1);">
-    <div style="background:#1e1e1e;padding:32px;text-align:center;color:#f5f0e8;">
-      <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#a8c4ab;margin-bottom:8px;">Weekly Household Report</div>
-      <h1 style="font-size:28px;font-weight:900;margin:0 0 8px;">Cleaning Schedule</h1>
-      <div style="color:rgba(245,240,232,0.6);font-size:14px;">${fmt(ws)} – ${fmt(we)}</div>
-      <div style="margin-top:16px;display:inline-block;background:rgba(122,158,126,0.25);border:1px solid rgba(122,158,126,0.5);color:#a8c4ab;padding:6px 18px;border-radius:100px;font-size:13px;">
-        Overall: <strong>${doneIds.length} / ${allIds.length} tasks completed (${totalPct}%)</strong>
+  <body style="font-family:Arial,sans-serif;background:#f6f2ea;padding:20px;">
+    <div style="max-width:900px;margin:0 auto;background:#fff;border:1px solid #ddd;border-radius:10px;overflow:hidden;">
+      <div style="background:#1f2a25;color:#fff;padding:18px;">
+        <h2 style="margin:0 0 6px;">Weekly Cleaning Report</h2>
+        <div style="opacity:.9;">${formatDate(weekStart)} to ${formatDate(weekEnd)}</div>
+        <div style="margin-top:8px;background:#2f7a57;display:inline-block;padding:5px 10px;border-radius:999px;">${done.length}/${defs.length} completed (${pct}%)</div>
+      </div>
+      <div style="padding:16px;">
+        <h3 style="margin-top:0;">Completed</h3>
+        ${done.length ? `<table style="width:100%;border-collapse:collapse;font-size:13px;">${rows(done)}</table>` : "<p>None</p>"}
+        <h3 style="margin-top:18px;">Not completed</h3>
+        ${pending.length ? `<table style="width:100%;border-collapse:collapse;font-size:13px;">${rows(pending)}</table>` : "<p>All tasks complete.</p>"}
       </div>
     </div>
-    <div style="padding:32px;">
-      <h2 style="font-size:18px;color:#1e1e1e;margin:0 0 16px;border-bottom:2px solid #7a9e7e;padding-bottom:8px;">✅ Completed Tasks (${doneRows.length})</h2>
-      ${doneRows.length > 0 ? `
-      <table style="${tableStyle}">
-        <thead><tr>
-          <th style="${thStyle}">Area</th>
-          <th style="${thStyle}">Task</th>
-          <th style="${thStyle}">Assigned To</th>
-          <th style="${thStyle}">Status</th>
-        </tr></thead>
-        <tbody>${sectionRows(doneRows)}</tbody>
-      </table>` : `<p style="color:#8a8478;font-size:14px;margin-bottom:24px;">No tasks completed this week.</p>`}
-
-      <h2 style="font-size:18px;color:#1e1e1e;margin:0 0 16px;border-bottom:2px solid #c4714a;padding-bottom:8px;">❌ Incomplete Tasks (${notDoneRows.length})</h2>
-      ${notDoneRows.length > 0 ? `
-      <table style="${tableStyle}">
-        <thead><tr>
-          <th style="${thStyle}">Area</th>
-          <th style="${thStyle}">Task</th>
-          <th style="${thStyle}">Assigned To</th>
-          <th style="${thStyle}">Status</th>
-        </tr></thead>
-        <tbody>${sectionRows(notDoneRows)}</tbody>
-      </table>` : `<p style="color:#8a8478;font-size:14px;margin-bottom:24px;">🎉 All tasks completed!</p>`}
-    </div>
-    <div style="background:#f5f0e8;padding:20px 32px;text-align:center;font-size:12px;color:#8a8478;">
-      Auto-generated weekly report · Resets every Sunday · Household Cleaning Schedule
-    </div>
-  </div>
-</body>
+  </body>
 </html>`;
-}
-
-async function sendReport() {
-  const ejs = JSON.parse(localStorage.getItem('ejsConfig') || '{}');
-  if (!ejs.key || !ejs.service || !ejs.template) {
-    openSetup();
-    showNotif('Setup Required', 'Please configure EmailJS first.');
-    return;
-  }
-
-  showNotif('Sending...', 'Building your weekly report email...');
-
-  const reportHTML = buildReportHTML();
-  const ws = getWeekStart();
-  const fmt = d => d.toLocaleDateString('en-AU', { day:'numeric', month:'short', year:'numeric' });
-  const we = new Date(ws); we.setDate(ws.getDate() + 6);
-
-  try {
-    const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        service_id: ejs.service,
-        template_id: ejs.template,
-        user_id: ejs.key,
-        template_params: {
-          to_email: 'ryanbaskerville09@hotmail.com',
-          subject: `Cleaning Report: ${fmt(ws)} - ${fmt(we)}`,
-          report_html: reportHTML
-        }
-      })
-    });
-
-    if (response.ok) {
-      showNotif('Report Sent! 📧', 'Weekly report emailed to ryanbaskerville09@hotmail.com');
-    } else {
-      const errText = await response.text();
-      console.error('EmailJS error:', errText);
-      // Show detailed error to help debug
-      showNotif('Send Failed ❌', `Error: ${errText || response.status}. Check setup.`);
     }
-  } catch (err) {
-    console.error('Fetch error:', err);
-    showNotif('Connection Error ❌', 'Could not reach EmailJS. Are you online?');
-  }
-}
 
-// ─── AUTO-SEND ON SUNDAY ─────────────────────────────────────────────────────
+    async function sendWeeklyReport() {
+      const cfg = loadJSON("emailjs_config_v1", null);
+      if (!cfg || !cfg.key || !cfg.service || !cfg.template) {
+        openEmailSetup();
+        alert("Please complete Email setup first.");
+        return;
+      }
 
-function checkAutoSend() {
-  const today = new Date();
-  if (today.getDay() !== 0) return; // Only Sunday
-  const lastSent = localStorage.getItem('lastAutoSentWeek');
-  const weekKey = getWeekKey();
-  if (lastSent === weekKey) return;
-  // Auto-send at 8pm on Sunday
-  const hour = today.getHours();
-  if (hour >= 20) {
-    localStorage.setItem('lastAutoSentWeek', weekKey);
-    sendReport();
-  }
-}
+      const rotationState = advanceRotationToCurrentWeek();
+      const tasks = loadWeekTasks();
+      const reportHtml = buildReportHtml(rotationState, tasks);
+      const subject = `Cleaning report ${getCurrentWeekKey()}`;
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
+      try {
+        const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            service_id: cfg.service,
+            template_id: cfg.template,
+            user_id: cfg.key,
+            template_params: {
+              to_email: EMAIL_TARGET,
+              subject,
+              report_html: reportHtml
+            }
+          })
+        });
 
-renderAll();
-checkAutoSend();
-setInterval(checkAutoSend, 60 * 60 * 1000); // Check every hour
+        if (!res.ok) {
+          const body = await res.text();
+          alert(`Email send failed: ${body || res.status}`);
+          return;
+        }
 
-// Auto-reset check
-(function checkAutoReset() {
-  const lastReset = localStorage.getItem('lastResetWeek');
-  const weekKey = getWeekKey();
-  if (lastReset !== weekKey) {
-    // New week detected — reset
-    const oldKeys = Object.keys(localStorage).filter(k => k.startsWith('cleaningSchedule_') && k !== `cleaningS
+        const autosendKey = `autosent_${getCurrentWeekKey()}`;
+        localStorage.setItem(autosendKey, "true");
+        alert(`Weekly report sent to ${EMAIL_TARGET}`);
+      } catch (err) {
+        alert("Could not send report. Check network and EmailJS config.");
+      }
+    }
+
+    async function maybeAutoSendSundayNight() {
+      const now = new Date();
+      const isSunday = now.getDay() === 0;
+      const after8pm = now.getHours() >= 20;
+      if (!isSunday || !after8pm || !hasEmailSetup()) return;
+
+      const autosendKey = `autosent_${getCurrentWeekKey()}`;
+      if (localStorage.getItem(autosendKey) === "true") return;
+      await sendWeeklyReport();
+    }
+
+    document.addEventListener("change", onToggleTask);
+
+    maybeCleanupOldTaskKeys();
+    renderApp();
+    maybeAutoSendSundayNight();
+    setInterval(maybeAutoSendSundayNight, 60 * 60 * 1000);
+  </script>
+</body>
+</html>
