@@ -250,6 +250,95 @@
     .notice { margin: 10px 0; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 14px; padding: 10px 14px; font-size: 0.82rem; color: #14532d; }
     .notice.hidden { display: none; }
 
+    /* ── Holidays ── */
+    .holidays-section {
+      margin-top: 14px;
+      background: white;
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    .hol-head {
+      display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .hol-head h3 { font-size: 0.95rem; font-weight: 800; margin: 0; }
+    .hol-arrow { font-size: 0.8rem; transition: transform 0.2s; color: var(--muted); }
+    .hol-arrow.open { transform: rotate(180deg); }
+    .hol-summary { margin-top: 6px; font-size: 0.78rem; color: #92400e; }
+    .holidays-grid { margin-top: 12px; overflow-x: auto; }
+    .holidays-grid.collapsed { display: none; }
+    .hol-row { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+    .hol-name { font-size: 0.78rem; font-weight: 700; width: 68px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hol-week-btn {
+      padding: 4px 6px; border-radius: 7px; border: 1.5px solid var(--line);
+      background: white; font-size: 0.65rem; font-weight: 600; cursor: pointer;
+      min-height: 26px; -webkit-tap-highlight-color: transparent; min-width: 52px; text-align: center;
+      transition: all 0.15s;
+    }
+    .hol-week-btn:active { transform: scale(0.95); }
+    .hol-week-btn.away { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+    .hol-legend { font-size: 0.7rem; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+    .picker-btn .away-tag { display: block; font-size: 0.62rem; opacity: 0.8; }
+    .picker-btn.is-away { opacity: 0.55; }
+    .away-banner {
+      background: #fef3c7; border: 1.5px solid #fbbf24; border-radius: 12px;
+      padding: 12px 14px; font-size: 0.82rem; color: #92400e; line-height: 1.5;
+    }
+    .away-banner strong { color: #78350f; }
+    .away-banner button {
+      background: #f59e0b; color: white; padding: 6px 14px; border-radius: 8px;
+      font-size: 0.78rem; min-height: 34px; margin-top: 8px;
+    }
+
+    /* ── Confetti ── */
+    #confettiCanvas {
+      position: fixed; inset: 0; z-index: 999; pointer-events: none;
+    }
+
+    /* ── Vibe message ── */
+    .vibe-msg {
+      margin-top: 8px; font-size: 0.78rem; color: rgba(255,255,255,0.92);
+      font-weight: 600; line-height: 1.4;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: #1e0a3c; color: white; padding: 12px 20px; border-radius: 16px;
+      font-size: 0.88rem; font-weight: 700; z-index: 50; opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); white-space: nowrap;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3); pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Leaderboard ── */
+    .leaderboard {
+      margin-top: 14px; background: white; border-radius: var(--radius);
+      padding: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    .lb-title { font-weight: 800; font-size: 0.95rem; margin-bottom: 10px; }
+    .lb-row {
+      display: flex; align-items: center; gap: 10px; padding: 7px 0;
+      border-bottom: 1px solid var(--line); font-size: 0.82rem;
+    }
+    .lb-row:last-child { border-bottom: none; }
+    .lb-pos { font-weight: 800; font-size: 1rem; width: 28px; text-align: center; }
+    .lb-name { font-weight: 700; flex: 1; }
+    .lb-rank { font-size: 0.72rem; color: var(--muted); }
+    .lb-bar-wrap { width: 60px; height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+    .lb-bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--purple), var(--pink)); transition: width 0.3s; }
+    .lb-pct { font-weight: 800; font-size: 0.78rem; width: 36px; text-align: right; }
+
+    /* ── Streak ── */
+    .streak-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.18); border-radius: 999px;
+      padding: 4px 10px; font-size: 0.72rem; font-weight: 700;
+      margin-top: 8px; color: rgba(255,255,255,0.95);
+    }
+    .streak-badge.none { opacity: 0.5; }
+
     @supports (padding: max(0px)) {
       .shell { padding-bottom: max(100px, calc(60px + env(safe-area-inset-bottom))); }
     }
@@ -279,6 +368,8 @@
       <div class="picker-grid" id="pickerGrid"></div>
     </div>
 
+    <div class="holidays-section" id="holidaysSection"></div>
+
     <section class="your-tasks hidden" id="yourTasks"></section>
 
     <h2 class="section-title">🗑️ Daily Trash Duty</h2>
@@ -287,11 +378,17 @@
     <h2 class="section-title">🧹 Shared Areas — Weekly Rotation</h2>
     <section class="grid" id="sharedGrid"></section>
 
+    <h2 class="section-title">🏆 Leaderboard</h2>
+    <section class="leaderboard" id="leaderboard"></section>
+
     <div class="footer-note">
       Auto-resets every Sunday · Bins out Wed night · Collection Thursday<br>
       <a href="https://ryanbasko5-bot.github.io/house-cleaning/">ryanbasko5-bot.github.io/house-cleaning</a>
     </div>
   </div>
+
+  <canvas id="confettiCanvas"></canvas>
+  <div class="toast" id="toast"></div>
 
   <div class="modal" id="emailModal">
     <div class="modal-card">
@@ -318,6 +415,90 @@
     const UPSTAIRS_BATH_USERS   = ["Diago","Astrid"];                 // Bedrooms 1(vacant)&2 upstairs — only Diago & Astrid
     // Own bathroom (not assigned any shared bathroom): Henry & Maeve, Rohain & Svetlana, Ziyue
     const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+
+    /* ── Gen Z rank titles ── */
+    const RANK_TIERS = [
+      { min: 100, titles: ["Literally Unhinged 🧹✨", "Slay Queen of Clean 💅", "Main Character Energy ✨", "Mother 🫡", "Ate & Left No Crumbs 🍽️"] },
+      { min: 75, titles: ["Lowkey Iconic 🔥", "Serving Cleanliness 💁", "No Cap Productive 🧢", "That Girl Era 🌸", "It's Giving… Effort 👏"] },
+      { min: 50, titles: ["Mid (Affectionate) 😐", "The Bare Minimum Bestie 🤝", "Vibes Are… Present 🫠", "Chaotic Neutral 🎲", "Participation Trophy 🏅"] },
+      { min: 25, titles: ["Giving NPC Energy 🤖", "Delulu About Cleaning 🫣", "the Ick 🤢", "Caught in 4K Slacking 📸", "Living Their Villain Arc 😈"] },
+      { min: 0, titles: ["Bffr 💀", "Lost Cause Era 🪦", "the Ick (Derogatory) 🚩", "Down Horrendous 📉", "Posted Up on Couch 🛋️"] },
+    ];
+    function getRankTitle(pct) {
+      const tier = RANK_TIERS.find(t => pct >= t.min) || RANK_TIERS[RANK_TIERS.length-1];
+      // Deterministic pick per week so it doesn't shuffle on re-render
+      const seed = getCurrentWeekKey().split("-").reduce((a,b)=>a+Number(b),0);
+      return tier.titles[seed % tier.titles.length];
+    }
+
+    /* ── Toast reactions for completing tasks ── */
+    const TASK_REACTIONS = [
+      "slay 💅", "ate that 🍽️", "no cap that was clean 🧢", "lowkey impressed 🔥",
+      "main character moment ✨", "understood the assignment 📝", "it's giving productive 💁",
+      "okay queen go off 👑", "clean bestie energy 🧹", "W behavior 🏆",
+      "period. 💅", "we stan a clean legend 🫡", "that was bussin fr fr 🔥",
+      "rent? paid. task? done. 💰", "mother is mothering 🧼", "absolutely unhinged work ethic 🤯",
+      "gaslight gatekeep girlboss… clean? ✅", "living your best clean era 🌸",
+    ];
+    const ALL_DONE_REACTIONS = [
+      "ALL TASKS DONE?? touch grass bestie you earned it 🌿",
+      "100%?? who ARE you?? 😭✨",
+      "slay slay slay the house is IMMACULATE 💅🏡",
+      "you literally ate and left no crumbs 🍽️✨",
+      "main character arc COMPLETED 🎬",
+      "landlord could never. NEVER. 🫡",
+      "certified clean freak (complimentary) 🧹👑",
+    ];
+    let toastTimeout = null;
+    function showToast(msg) {
+      const el=document.getElementById("toast"); el.textContent=msg;
+      el.classList.add("show"); clearTimeout(toastTimeout);
+      toastTimeout=setTimeout(()=>el.classList.remove("show"),2500);
+    }
+
+    /* ── Passive-aggressive vibe messages ── */
+    const VIBE_MESSAGES = {
+      perfect: [
+        "the house is literally immaculate rn omg 💅",
+        "everyone understood the assignment 📝✨",
+        "landlord would shed a tear of joy 🥲",
+      ],
+      good: [
+        "we're so close bestie don't give up now 🫶",
+        "the vibes are clean and the house is cleaner ✨",
+        "serving responsible adult energy 💁",
+      ],
+      mid: [
+        "it's giving… half-done homework energy 📚😬",
+        "we're at the 'it'll buff out' stage 🫠",
+        "some of us are carrying and it shows 🏋️",
+      ],
+      bad_early: [
+        "it's early dw we believe in you (for now) 🙏",
+        "plenty of time left… right? RIGHT? 👀",
+        "the week is young but the mess is eternal 🧹",
+      ],
+      bad_late: [
+        "it's literally almost Sunday bestie pls 💀",
+        "the passive aggression in this app rn 📈",
+        "not the landlord seeing this… 🫣",
+        "cleaning schedule said 'do your tasks' and y'all said 'no' 🚩",
+        "this is your sign. CLEAN SOMETHING. 🪧",
+        "the mould is developing a personality 🍄",
+      ],
+    };
+    function getVibeMessage(pct) {
+      const dayOfWeek = new Date().getDay(); // 0=Sun
+      const isLate = dayOfWeek >= 5 || dayOfWeek === 0; // Fri/Sat/Sun
+      let pool;
+      if (pct >= 100) pool = VIBE_MESSAGES.perfect;
+      else if (pct >= 70) pool = VIBE_MESSAGES.good;
+      else if (pct >= 40) pool = VIBE_MESSAGES.mid;
+      else if (isLate) pool = VIBE_MESSAGES.bad_late;
+      else pool = VIBE_MESSAGES.bad_early;
+      // Rotate based on day so it changes daily
+      return pool[dayOfWeek % pool.length];
+    }
 
 const sharedAreas = [
       // Bathrooms — restricted pools, weekly
@@ -407,36 +588,111 @@ const sharedAreas = [
     function loadPlannedDays() { return loadJSON(getPlannedDaysKey(), {}); }
     function savePlannedDays(d) { saveJSON(getPlannedDaysKey(), d); }
 
+    /* ── Holidays / Away ── */
+    function loadHolidays() { return loadJSON("holidays_v1", {}); }
+    function saveHolidays(h) { saveJSON("holidays_v1", h); }
+    function isPersonAway(name, weekKey) { const h=loadHolidays(); return Boolean(h[name] && h[name].includes(weekKey||getCurrentWeekKey())); }
+    function togglePersonAway(name, weekKey) {
+      const h=loadHolidays(), wk=weekKey||getCurrentWeekKey();
+      if(!h[name]) h[name]=[];
+      const idx=h[name].indexOf(wk);
+      if(idx>=0) h[name].splice(idx,1); else h[name].push(wk);
+      if(h[name].length===0) delete h[name];
+      saveHolidays(h); renderApp();
+    }
+    function getAwayResidents(weekKey) {
+      const wk=weekKey||getCurrentWeekKey(), h=loadHolidays();
+      return OCCUPIED_RESIDENTS.filter(r => h[r] && h[r].includes(wk));
+    }
+
     /* ── Completion timestamps ── */
     function getDoneDatesKey() { return `done_dates_${getCurrentWeekKey()}`; }
     function loadDoneDates() { return loadJSON(getDoneDatesKey(), {}); }
     function saveDoneDates(d) { saveJSON(getDoneDatesKey(), d); }
 
-    /* ── Assignments ── */
+    /* ── Streaks ── */
+    function getStreakKey() { return `streak_v1`; }
+    function loadStreaks() { return loadJSON(getStreakKey(), {}); }
+    function saveStreaks(s) { saveJSON(getStreakKey(), s); }
+    function recordWeekCompletion(personName, allDone) {
+      const streaks = loadStreaks();
+      const wk = getCurrentWeekKey();
+      if (!streaks[personName]) streaks[personName] = { current: 0, best: 0, lastCompleteWeek: null };
+      const s = streaks[personName];
+      if (allDone) {
+        if (s.lastCompleteWeek !== wk) {
+          // Check if consecutive
+          if (s.lastCompleteWeek) {
+            const gap = weeksBetween(s.lastCompleteWeek, wk);
+            s.current = gap === 1 ? s.current + 1 : 1;
+          } else { s.current = 1; }
+          s.lastCompleteWeek = wk;
+          s.best = Math.max(s.best, s.current);
+        }
+      } else {
+        // If this week not complete, and last complete was a prior week, don't break mid-week
+        if (s.lastCompleteWeek === wk) { s.current = Math.max(0, s.current - 1); s.lastCompleteWeek = null; }
+      }
+      saveStreaks(streaks);
+      return s;
+    }
+    function getStreak(personName) {
+      const streaks = loadStreaks();
+      return streaks[personName] || { current: 0, best: 0, lastCompleteWeek: null };
+    }
+
+    /* ── Confetti ── */
+    function launchConfetti() {
+      const canvas=document.getElementById("confettiCanvas"), ctx=canvas.getContext("2d");
+      canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+      const pieces=[]; const colors=["#7c3aed","#db2777","#059669","#f59e0b","#06b6d4","#f0abfc","#86efac","#fbbf24"];
+      for(let i=0;i<150;i++) pieces.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height*-1,r:Math.random()*6+3,c:colors[Math.floor(Math.random()*colors.length)],vx:(Math.random()-0.5)*4,vy:Math.random()*4+2,rot:Math.random()*360,rv:(Math.random()-0.5)*8});
+      let frame=0;
+      function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);pieces.forEach(p=>{ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.c;ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);ctx.restore();p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;p.vy+=0.05;});frame++;if(frame<180)requestAnimationFrame(draw);else ctx.clearRect(0,0,canvas.width,canvas.height);}
+      draw();
+    }
+
+    /* ── Assignments (holiday-aware) ── */
     function getSharedAssignments(rs) {
       const o={};
       const wn = getWeekNumber();
       const active = getActiveAreas(wn);
-      // 1. Assign bathrooms first from restricted pools (if active this week)
+      const awaySet = new Set(getAwayResidents());
+      // 1. Assign bathrooms from restricted pools, skipping away people
       const bathDown = active.find(a => a.bathPool === "down");
       const bathUp = active.find(a => a.bathPool === "up");
-      const bathDownPerson = bathDown ? DOWNSTAIRS_BATH_USERS[rs.bathDownIndex % DOWNSTAIRS_BATH_USERS.length] : null;
-      const bathUpPerson = bathUp ? UPSTAIRS_BATH_USERS[rs.bathUpIndex % UPSTAIRS_BATH_USERS.length] : null;
-      if (bathDown) o[bathDown.id] = bathDownPerson;
-      if (bathUp) o[bathUp.id] = bathUpPerson;
-      // 2. Exclude bathroom assignees from general pool
+      let bathDownPerson = null;
+      if (bathDown) {
+        const pool = DOWNSTAIRS_BATH_USERS.filter(r => !awaySet.has(r));
+        bathDownPerson = pool.length > 0 ? pool[rs.bathDownIndex % pool.length] : null;
+        if (bathDownPerson) o[bathDown.id] = bathDownPerson;
+      }
+      let bathUpPerson = null;
+      if (bathUp) {
+        const pool = UPSTAIRS_BATH_USERS.filter(r => !awaySet.has(r));
+        bathUpPerson = pool.length > 0 ? pool[rs.bathUpIndex % pool.length] : null;
+        if (bathUpPerson) o[bathUp.id] = bathUpPerson;
+      }
+      // 2. Exclude bathroom assignees AND away people from general pool
       const taken = new Set([bathDownPerson, bathUpPerson].filter(Boolean));
-      const available = OCCUPIED_RESIDENTS.filter(r => !taken.has(r));
+      const available = OCCUPIED_RESIDENTS.filter(r => !taken.has(r) && !awaySet.has(r));
       // 3. Assign general areas from remaining pool
       let idx = 0;
       active.forEach(a => {
         if (a.bathPool) return;
-        o[a.id] = available[(rs.sharedStartIndex + idx) % available.length];
+        if (available.length > 0) {
+          o[a.id] = available[(rs.sharedStartIndex + idx) % available.length];
+        }
         idx++;
       });
       return o;
     }
-    function getTrashAssignments(rs) { return DAYS.map((_,i)=>OCCUPIED_RESIDENTS[(rs.trashStartIndex+i)%OCCUPIED_RESIDENTS.length]); }
+    function getTrashAssignments(rs) {
+      const awaySet = new Set(getAwayResidents());
+      const available = OCCUPIED_RESIDENTS.filter(r => !awaySet.has(r));
+      if (available.length === 0) return DAYS.map(() => "—");
+      return DAYS.map((_,i) => available[(rs.trashStartIndex+i) % available.length]);
+    }
 
     function allTaskDefinitions(rs) {
       const defs=[], ta=getTrashAssignments(rs);
@@ -459,6 +715,7 @@ const sharedAreas = [
 
     function renderPicker() {
       const grid=document.getElementById("pickerGrid"); grid.innerHTML="";
+      const awaySet = new Set(getAwayResidents());
       const allBtn=document.createElement("button");
       allBtn.className=`picker-btn everyone${!selectedPerson?" active":""}`;
       allBtn.textContent="👀 Everyone";
@@ -466,8 +723,9 @@ const sharedAreas = [
       grid.appendChild(allBtn);
       OCCUPIED_RESIDENTS.forEach(name=>{
         const btn=document.createElement("button");
-        btn.className=`picker-btn${selectedPerson===name?" active":""}`;
-        btn.textContent=name;
+        const away = awaySet.has(name);
+        btn.className=`picker-btn${selectedPerson===name?" active":""}${away?" is-away":""}`;
+        btn.innerHTML=escapeHtml(name)+(away?'<span class="away-tag">✈️ away</span>':'');
         btn.onclick=()=>{selectedPerson=name;localStorage.setItem("selectedPerson",name);renderApp();};
         grid.appendChild(btn);
       });
@@ -477,6 +735,11 @@ const sharedAreas = [
     function renderYourTasks(rs, tasks) {
       const section=document.getElementById("yourTasks");
       if(!selectedPerson){section.classList.add("hidden");section.innerHTML="";return;}
+      if(isPersonAway(selectedPerson)){
+        section.classList.remove("hidden");
+        section.innerHTML=`<div class="away-banner">✈️ <strong>${escapeHtml(selectedPerson)}</strong> is marked as away this week. Tasks have been redistributed to others.<br><button onclick="togglePersonAway('${escapeHtml(selectedPerson)}')">I'm back! Remove away status</button></div>`;
+        return;
+      }
       const defs=allTaskDefinitions(rs);
       const myTasks=defs.filter(d=>isAssignedToPerson(d.assignedTo,selectedPerson));
       const todayDayIndex=(()=>{const n=new Date().getDay();return n===0?6:n-1;})();
@@ -488,7 +751,11 @@ const sharedAreas = [
       const myPlanned=planned[selectedPerson]||null;
 
       section.classList.remove("hidden");
-      section.innerHTML=`<h2>📋 ${escapeHtml(selectedPerson)}'s Tasks</h2><div class="yt-sub">${doneCount}/${myTasks.length} done — keep going! 💪</div>`;
+      const streakInfo = getStreak(selectedPerson);
+      const streakLabel = streakInfo.current > 0
+        ? `<div class="streak-badge">🔥 ${streakInfo.current}-week streak${streakInfo.best > streakInfo.current ? ` · Best: ${streakInfo.best}` : streakInfo.current >= 3 ? ' · UNSTOPPABLE' : ''}</div>`
+        : `<div class="streak-badge none">🔥 No streak yet — finish all tasks to start one!</div>`;
+      section.innerHTML=`<h2>📋 ${escapeHtml(selectedPerson)}'s Tasks</h2><div class="yt-sub">${doneCount}/${myTasks.length} done — keep going! 💪</div>${streakLabel}`;
 
       // Day picker — when will you clean this week?
       const hasSharedTasks = myTasks.some(d => d.day === "This week");
@@ -558,6 +825,7 @@ const sharedAreas = [
       const wn=getWeekNumber(), active=getActiveAreas(wn);
       active.forEach(area=>{
         const assigned=assignments[area.id];
+        if (!assigned) return; // skip if no one available (e.g. all pool users away)
         const mine=selectedPerson&&isAssignedToPerson(assigned,selectedPerson);
         const faded=selectedPerson&&!mine;
         const card=document.createElement("article");
@@ -595,7 +863,73 @@ const sharedAreas = [
       const defs=allTaskDefinitions(rs), done=defs.filter(d=>tasks[d.id]).length, total=defs.length, pct=total?Math.round(done/total*100):0;
       document.getElementById("progressFill").style.width=`${pct}%`;
       document.getElementById("progressText").textContent=`${done}/${total} done (${pct}%)`;
+      // Vibe message
+      let vibeEl=document.getElementById("vibeMsg");
+      if(!vibeEl){vibeEl=document.createElement("div");vibeEl.id="vibeMsg";vibeEl.className="vibe-msg";document.querySelector(".hero").appendChild(vibeEl);}
+      vibeEl.textContent=getVibeMessage(pct);
     }
+
+    /* ══════════ LEADERBOARD ══════════ */
+    function renderLeaderboard(rs, tasks) {
+      const section = document.getElementById("leaderboard");
+      const defs = allTaskDefinitions(rs);
+      const awaySet = new Set(getAwayResidents());
+      const scores = OCCUPIED_RESIDENTS.filter(r => !awaySet.has(r)).map(name => {
+        const my = defs.filter(d => isAssignedToPerson(d.assignedTo, name));
+        const done = my.filter(d => tasks[d.id]).length;
+        const total = my.length;
+        const pct = total ? Math.round(done / total * 100) : 0;
+        return { name, done, total, pct };
+      }).sort((a, b) => b.pct - a.pct || b.done - a.done);
+
+      const medals = ["👑", "🥈", "🥉"];
+      let html = `<div class="lb-title">🏆 Weekly Leaderboard</div>`;
+      scores.forEach((s, i) => {
+        const pos = i < 3 ? medals[i] : `${i + 1}.`;
+        const rank = getRankTitle(s.pct);
+        html += `<div class="lb-row">
+          <div class="lb-pos">${pos}</div>
+          <div class="lb-name">${escapeHtml(s.name)}<div class="lb-rank">${rank}</div></div>
+          <div class="lb-bar-wrap"><div class="lb-bar" style="width:${s.pct}%"></div></div>
+          <div class="lb-pct">${s.pct}%</div>
+        </div>`;
+      });
+      section.innerHTML = html;
+    }
+
+    /* ══════════ HOLIDAYS UI ══════════ */
+    function renderHolidays() {
+      const section=document.getElementById("holidaysSection");
+      const holidays=loadHolidays();
+      const isOpen=loadJSON("holidays_panel_open",false);
+      const awayNow=getAwayResidents();
+      const weeks=[];
+      const baseWs=getWeekStartSunday();
+      for(let w=0;w<5;w++){
+        const d=new Date(baseWs); d.setDate(baseWs.getDate()+w*7);
+        weeks.push({key:toDateOnlyKey(d), label:w===0?"This wk":d.toLocaleDateString("en-AU",{day:"numeric",month:"short"})});
+      }
+      let html=`<div class="hol-head" onclick="toggleHolidaysPanel()"><h3>✈️ Holidays & Away</h3><span class="hol-arrow${isOpen?" open":""}">▼</span></div>`;
+      if(awayNow.length>0){
+        html+=`<div class="hol-summary">Away this week: <strong>${awayNow.map(escapeHtml).join("</strong>, <strong>")}</strong> — tasks redistributed ✅</div>`;
+      }
+      html+=`<div class="holidays-grid${isOpen?"":" collapsed"}">`;
+      html+=`<div class="hol-row"><div class="hol-name" style="color:var(--muted);font-size:0.68rem">Person</div>`;
+      weeks.forEach(w=>{html+=`<div style="font-size:0.65rem;font-weight:700;color:var(--muted);min-width:52px;text-align:center">${w.label}</div>`;});
+      html+=`</div>`;
+      OCCUPIED_RESIDENTS.forEach(name=>{
+        const ph=holidays[name]||[];
+        html+=`<div class="hol-row"><div class="hol-name">${escapeHtml(name)}</div>`;
+        weeks.forEach(w=>{
+          const away=ph.includes(w.key);
+          html+=`<button class="hol-week-btn${away?" away":""}" onclick="togglePersonAway('${name}','${w.key}')">${away?"✈️ Away":"Home"}</button>`;
+        });
+        html+=`</div>`;
+      });
+      html+=`<div class="hol-legend">Tap to toggle · Away people's tasks auto-redistribute to available housemates</div></div>`;
+      section.innerHTML=html;
+    }
+    function toggleHolidaysPanel(){saveJSON("holidays_panel_open",!loadJSON("holidays_panel_open",false));renderHolidays();}
 
     /* ══════════ MAIN RENDER ══════════ */
     function renderApp() {
@@ -603,7 +937,7 @@ const sharedAreas = [
       document.getElementById("todayDate").textContent=now.toLocaleDateString("en-AU",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
       const ws=getWeekStartSunday(),we=new Date(ws); we.setDate(ws.getDate()+6);
       document.getElementById("weekRange").textContent=`Week: ${formatDate(ws)} → ${formatDate(we)}`;
-      renderPicker(); renderYourTasks(rs,tasks); renderTrash(rs,tasks); renderShared(rs,tasks); renderProgress(rs,tasks); renderEmailNotice();
+      renderPicker(); renderHolidays(); renderYourTasks(rs,tasks); renderTrash(rs,tasks); renderShared(rs,tasks); renderProgress(rs,tasks); renderLeaderboard(rs,tasks); renderEmailNotice();
     }
 
     /* ══════════ EVENTS ══════════ */
@@ -621,7 +955,22 @@ const sharedAreas = [
         const row=cb.closest(".task-row,.your-task-item");
         if(row) row.classList.toggle("done",input.checked);
       });
-      const rs=advanceRotationToCurrentWeek(); renderProgress(rs,tasks); renderYourTasks(rs,tasks);
+      // Check if person finished all tasks — confetti + toast!
+      const rs=advanceRotationToCurrentWeek();
+      if(selectedPerson && input.checked){
+        const defs=allTaskDefinitions(rs);
+        const myTasks=defs.filter(d=>isAssignedToPerson(d.assignedTo,selectedPerson));
+        const myDone=myTasks.filter(d=>tasks[d.id]).length;
+        if(myDone===myTasks.length && myTasks.length>0){
+          launchConfetti();
+          showToast(ALL_DONE_REACTIONS[Math.floor(Math.random()*ALL_DONE_REACTIONS.length)]);
+          recordWeekCompletion(selectedPerson, true);
+        } else {
+          showToast(TASK_REACTIONS[Math.floor(Math.random()*TASK_REACTIONS.length)]);
+          recordWeekCompletion(selectedPerson, false);
+        }
+      }
+      renderProgress(rs,tasks); renderYourTasks(rs,tasks); renderLeaderboard(rs,tasks);
     }
     document.addEventListener("change",onToggleTask);
 
@@ -658,6 +1007,8 @@ const sharedAreas = [
       txt += `  ${formatDate(ws)} - ${formatDate(we)}\n`;
       txt += '======================================\n\n';
       txt += `  PROGRESS: ${done.length} / ${defs.length} tasks done (${pct}%)\n\n`;
+      const awayNow=getAwayResidents();
+      if(awayNow.length>0){ txt+=`  AWAY THIS WEEK: ${awayNow.join(", ")}\n  (Their tasks were redistributed)\n\n`; }
       txt += '--------------------------------------\n';
       txt += '  TASKS BY PERSON\n';
       txt += '--------------------------------------\n\n';
