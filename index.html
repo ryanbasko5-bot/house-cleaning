@@ -272,6 +272,7 @@
 
     <div class="notice" id="emailNotice">
       ✅ Weekly email report auto-sends to <strong>ryanbaskerville09@hotmail.com</strong> every Sunday at 8 pm.
+      <br><button onclick="testSendReport()" style="margin-top:8px;background:#7c3aed;color:white;border:none;border-radius:8px;padding:8px 16px;font-weight:700;cursor:pointer;">📧 Send test report now</button>
     </div>
 
     <div class="picker">
@@ -662,12 +663,23 @@ const sharedAreas = [
       return txt;
     }
 
+    async function testSendReport() {
+      const cfg=getEmailConfig();
+      if(!cfg||!cfg.key||!cfg.service||!cfg.template){alert("Email not configured.");return;}
+      const rs=advanceRotationToCurrentWeek(), tasks=loadWeekTasks(), reportText=buildReportText(rs,tasks);
+      try {
+        const res=await fetch("https://api.emailjs.com/api/v1.0/email/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({service_id:cfg.service,template_id:cfg.template,user_id:cfg.key,template_params:{to_email:EMAIL_TARGET,subject:"Test - Weekly Cleaning Report "+getCurrentWeekKey(),message:reportText,report_html:reportText}})});
+        if(!res.ok){alert("Send failed: "+(await res.text()||res.status));return;}
+        alert("✅ Test report sent to "+EMAIL_TARGET);
+      } catch(e){alert("Could not send: "+e);}
+    }
+
     async function sendWeeklyReport() {
       const cfg=getEmailConfig();
       if(!cfg||!cfg.key||!cfg.service||!cfg.template) return;
       const rs=advanceRotationToCurrentWeek(), tasks=loadWeekTasks(), reportText=buildReportText(rs,tasks);
       try {
-        const res=await fetch("https://api.emailjs.com/api/v1.0/email/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({service_id:cfg.service,template_id:cfg.template,user_id:cfg.key,template_params:{to_email:EMAIL_TARGET,subject:`🏡 Cleaning report ${getCurrentWeekKey()}`,message:reportText}})});
+        const res=await fetch("https://api.emailjs.com/api/v1.0/email/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({service_id:cfg.service,template_id:cfg.template,user_id:cfg.key,template_params:{to_email:EMAIL_TARGET,subject:`🏡 Cleaning report ${getCurrentWeekKey()}`,message:reportText,report_html:reportText}})});
         if(!res.ok){alert(`Email send failed: ${await res.text()||res.status}`);return;}
         localStorage.setItem(`autosent_${getCurrentWeekKey()}`,"true");
       } catch{}
