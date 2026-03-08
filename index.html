@@ -379,6 +379,11 @@
 
   <script>
     const EMAIL_TARGET = "ryanbaskerville09@hotmail.com";
+    const EMAILJS_DEFAULT_CONFIG = {
+      service: "service_d9nq37p",
+      template: "template_hdzyvit",
+      key: "8xDuvCoPapEkbrVqU"
+    };
 
     const OCCUPIED_RESIDENTS = [
       "Makayla",
@@ -505,6 +510,20 @@
 
     function saveJSON(key, value) {
       localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function getEmailConfig() {
+      const cfg = loadJSON("emailjs_config_v1", {});
+      return {
+        key: cfg.key || EMAILJS_DEFAULT_CONFIG.key,
+        service: cfg.service || EMAILJS_DEFAULT_CONFIG.service,
+        template: cfg.template || EMAILJS_DEFAULT_CONFIG.template
+      };
+    }
+
+    function initializeDefaultEmailConfig() {
+      const cfg = getEmailConfig();
+      saveJSON("emailjs_config_v1", cfg);
     }
 
     function getRotationState() {
@@ -809,7 +828,7 @@
     }
 
     function openEmailSetup() {
-      const cfg = loadJSON("emailjs_config_v1", { key: "", service: "", template: "" });
+      const cfg = getEmailConfig();
       document.getElementById("ejsKey").value = cfg.key || "";
       document.getElementById("ejsService").value = cfg.service || "";
       document.getElementById("ejsTemplate").value = cfg.template || "";
@@ -833,7 +852,7 @@
     }
 
     function hasEmailSetup() {
-      const cfg = loadJSON("emailjs_config_v1", null);
+      const cfg = getEmailConfig();
       return Boolean(cfg && cfg.key && cfg.service && cfg.template);
     }
 
@@ -884,7 +903,7 @@
     }
 
     async function sendWeeklyReport() {
-      const cfg = loadJSON("emailjs_config_v1", null);
+      const cfg = getEmailConfig();
       if (!cfg || !cfg.key || !cfg.service || !cfg.template) {
         openEmailSetup();
         alert("Please complete Email setup first.");
@@ -939,6 +958,7 @@
 
     document.addEventListener("change", onToggleTask);
 
+    initializeDefaultEmailConfig();
     maybeCleanupOldTaskKeys();
     renderApp();
     maybeAutoSendSundayNight();
