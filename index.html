@@ -274,10 +274,6 @@
       ✅ Weekly email report auto-sends to <strong>ryanbaskerville09@hotmail.com</strong> every Sunday at 8 pm.
     </div>
 
-    <div style="text-align:center;margin:10px 0;">
-      <button onclick="testSendReport()" style="background:#7c3aed;color:white;border:none;border-radius:12px;padding:12px 24px;font-weight:700;cursor:pointer;font-size:0.9rem;box-shadow:0 4px 14px rgba(124,58,237,0.35);">📧 Send test report now</button>
-    </div>
-
     <div class="picker">
       <div class="picker-label">👋 Who are you?</div>
       <div class="picker-grid" id="pickerGrid"></div>
@@ -312,6 +308,8 @@
 
   <script>
     const EMAIL_TARGET = "ryanbaskerville09@hotmail.com";
+    const LANDLORD_EMAIL = "info@fabcaccounting.com.au";
+    const LANDLORD_NAME = "Lan Feng";
     const EMAILJS_DEFAULT_CONFIG = { service: "service_d9nq37p", template: "template_hdzyvit", key: "8xDuvCoPapEkbrVqU" };
 
     const OCCUPIED_RESIDENTS = ["Makayla","Henry","Maeve","Megan","Ryan","Diago","Astrid","Rohain","Svetlana","Ziyue"];
@@ -666,26 +664,16 @@ const sharedAreas = [
       return txt;
     }
 
-    async function testSendReport() {
-      const cfg=getEmailConfig();
-      if(!cfg||!cfg.key||!cfg.service||!cfg.template){alert("Email not configured.");return;}
-      const rs=advanceRotationToCurrentWeek(), tasks=loadWeekTasks(), reportText=buildReportText(rs,tasks);
-      try {
-        const res=await fetch("https://api.emailjs.com/api/v1.0/email/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({service_id:cfg.service,template_id:cfg.template,user_id:cfg.key,template_params:{to_email:EMAIL_TARGET,subject:"Test - Weekly Cleaning Report "+getCurrentWeekKey(),message:reportText,report_html:reportText}})});
-        if(!res.ok){alert("Send failed: "+(await res.text()||res.status));return;}
-        alert("✅ Test report sent to "+EMAIL_TARGET);
-      } catch(e){alert("Could not send: "+e);}
-    }
-
     async function sendWeeklyReport() {
       const cfg=getEmailConfig();
       if(!cfg||!cfg.key||!cfg.service||!cfg.template) return;
       const rs=advanceRotationToCurrentWeek(), tasks=loadWeekTasks(), reportText=buildReportText(rs,tasks);
-      try {
-        const res=await fetch("https://api.emailjs.com/api/v1.0/email/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({service_id:cfg.service,template_id:cfg.template,user_id:cfg.key,template_params:{to_email:EMAIL_TARGET,subject:`🏡 Cleaning report ${getCurrentWeekKey()}`,message:reportText,report_html:reportText}})});
-        if(!res.ok){alert(`Email send failed: ${await res.text()||res.status}`);return;}
-        localStorage.setItem(`autosent_${getCurrentWeekKey()}`,"true");
-      } catch{}
+      const subject=`🏡 Cleaning report ${getCurrentWeekKey()}`;
+      // Send to tenant
+      try { await fetch("https://api.emailjs.com/api/v1.0/email/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({service_id:cfg.service,template_id:cfg.template,user_id:cfg.key,template_params:{to_email:EMAIL_TARGET,subject,message:reportText,report_html:reportText}})}); } catch{}
+      // Send to landlord
+      try { await fetch("https://api.emailjs.com/api/v1.0/email/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({service_id:cfg.service,template_id:cfg.template,user_id:cfg.key,template_params:{to_email:LANDLORD_EMAIL,subject,message:reportText,report_html:reportText}})}); } catch{}
+      localStorage.setItem(`autosent_${getCurrentWeekKey()}`,"true");
     }
 
     async function maybeAutoSendSundayNight() {
