@@ -487,6 +487,7 @@
       <button class="sm-item" onclick="openPanel('swapPanel')"><span>🔄</span> Swap Requests <span class="sm-badge" id="swapBadge" style="display:none">0</span></button>
       <button class="sm-item" onclick="openPanel('awardsPanel')"><span>🏅</span> Housemate Awards</button>
       <button class="sm-item" onclick="openPanel('maintPanel')"><span>🔧</span> Maintenance Log <span class="sm-badge" id="maintBadge" style="display:none">0</span></button>
+      <button class="sm-item" onclick="openPanel('photoWallPanel')"><span>📸</span> Photo Wall</button>
     </div>
   </div>
 
@@ -506,6 +507,12 @@
   <div class="panel" id="maintPanel">
     <div class="panel-bar"><button class="panel-back" onclick="closePanel('maintPanel')">←</button><div class="panel-ttl">🔧 Maintenance Log</div><button class="btn-primary" style="margin-left:auto;padding:6px 12px;font-size:0.78rem;min-height:32px" onclick="openMaintForm()">+ Report</button></div>
     <div class="panel-body" id="maintBody"></div>
+  </div>
+
+  <!-- Photo Wall Panel -->
+  <div class="panel" id="photoWallPanel">
+    <div class="panel-bar"><button class="panel-back" onclick="closePanel('photoWallPanel')">←</button><div class="panel-ttl">📸 Photo Wall</div></div>
+    <div class="panel-body" id="photoWallBody"></div>
   </div>
 
   <!-- New Maintenance Modal -->
@@ -925,8 +932,7 @@ const sharedAreas = [
         const doneDate = doneDates[def.id];
         const doneLabel = done && doneDate ? `<div class="yt-done">✅ Done ${doneDate}</div>` : "";
         const ytProof=loadProof()[def.id];
-        const ytProofEl=done?(ytProof?`<div><img class="proof-thumb" src="${ytProof.photo}" data-proof-view="${def.id}" style="margin-top:4px" /></div>`:`<div><span class="proof-btn" data-proof-add="${def.id}">📷 Add proof</span></div>`):'';
-        item.innerHTML=`<input type="checkbox" ${done?"checked":""} data-task-id="${def.id}" /><div><div class="yt-label">${escapeHtml(def.task)}</div><div class="yt-where">${escapeHtml(def.section)}</div><div class="yt-date">${whenLabel}</div>${doneLabel}${ytProofEl}</div>`;
+        const ytProofEl=done&&ytProof?`<div><img class="proof-thumb" src="${ytProof.photo}" data-proof-view="${def.id}" style="margin-top:4px" /></div>`:'';        item.innerHTML=`<input type="checkbox" ${done?"checked":""} data-task-id="${def.id}" /><div><div class="yt-label">${escapeHtml(def.task)}</div><div class="yt-where">${escapeHtml(def.section)}</div><div class="yt-date">${whenLabel}</div>${doneLabel}${ytProofEl}</div>`;
         section.appendChild(item);
       });
 
@@ -994,7 +1000,6 @@ const sharedAreas = [
       const proof=loadProof()[id];
       let extra='';
       if(checked&&proof) extra=`<span style="margin-left:auto;flex-shrink:0"><img class="proof-thumb" src="${proof.photo}" data-proof-view="${id}" /></span>`;
-      else if(checked) extra=`<span style="margin-left:auto;flex-shrink:0" class="proof-btn" data-proof-add="${id}">📷</span>`;
       row.innerHTML=`<input type="checkbox" ${checked?"checked":""} data-task-id="${id}" /><span class="label">${escapeHtml(label)}</span>${extra}`;
       return row;
     }
@@ -1084,49 +1089,60 @@ const sharedAreas = [
     /* ══════════ EVENTS ══════════ */
     function onToggleTask(event) {
       const input=event.target;
-      if(!(input instanceof HTMLInputElement)||input.type!=="checkbox") return;
+      if(!(input instanceof HTMLInputElement)||input.type!=='checkbox') return;
       const id=input.dataset.taskId; if(!id) return;
-      const tasks=loadWeekTasks(); tasks[id]=input.checked; saveWeekTasks(tasks);
-      // Record or remove completion date
+
+      // If checking ON → require photo proof first
+      if(input.checked) {
+        input.checked=false; // revert until photo taken
+        const fileInp=document.createElement('input');
+        fileInp.type='file'; fileInp.accept='image/*'; fileInp.capture='environment';
+        fileInp.onchange=async()=>{
+          if(!fileInp.files[0]) return;
+          try {
+            const d=await fileToData(fileInp.files[0],true);
+            const p=loadProof(); p[id]={photo:d,by:selectedPerson||'Unknown',time:Date.now()}; saveProof(p);
+          } catch{ alert('Photo too large'); return; }
+          completeTask(id, true);
+        };
+        fileInp.click();
+        return;
+      }
+      // Unchecking → remove proof and uncheck
+      const pr=loadProof(); delete pr[id]; saveProof(pr);
+      completeTask(id, false);
+    }
+
+    function completeTask(id, checked) {
+      const tasks=loadWeekTasks(); tasks[id]=checked; saveWeekTasks(tasks);
       const dd=loadDoneDates();
-      if(input.checked){ dd[id]=new Date().toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short"}); } else { delete dd[id]; }
+      if(checked){ dd[id]=new Date().toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'}); } else { delete dd[id]; }
       saveDoneDates(dd);
-      // Update all-time totals
-      const rsNow=advanceRotationToCurrentWeek();
-      const defsNow=allTaskDefinitions(rsNow);
-      const taskDef=defsNow.find(d=>d.id===id);
+      const rsNow=advanceRotationToCurrentWeek(), defsNow=allTaskDefinitions(rsNow), taskDef=defsNow.find(d=>d.id===id);
       if(taskDef && taskDef.assignedTo) {
-        // assignedTo may be "Person A & Person B" — credit each
-        taskDef.assignedTo.split(/\s*&\s*|\s+and\s+/i).map(n=>n.trim()).filter(Boolean).forEach(n=>recordAllTime(n, input.checked?1:-1));
+        taskDef.assignedTo.split(/\s*&\s*|\s+and\s+/i).map(n=>n.trim()).filter(Boolean).forEach(n=>recordAllTime(n, checked?1:-1));
       }
       document.querySelectorAll(`input[data-task-id="${CSS.escape(id)}"]`).forEach(cb=>{
-        cb.checked=input.checked;
-        const row=cb.closest(".task-row,.your-task-item");
-        if(row) row.classList.toggle("done",input.checked);
+        cb.checked=checked;
+        const row=cb.closest('.task-row,.your-task-item');
+        if(row) row.classList.toggle('done',checked);
       });
-      // Check if person finished all tasks — confetti + toast!
       const rs=advanceRotationToCurrentWeek();
-      if(selectedPerson && input.checked){
-        const defs=allTaskDefinitions(rs);
-        const myTasks=defs.filter(d=>isAssignedToPerson(d.assignedTo,selectedPerson));
+      if(selectedPerson && checked){
+        const defs=allTaskDefinitions(rs), myTasks=defs.filter(d=>isAssignedToPerson(d.assignedTo,selectedPerson));
         const myDone=myTasks.filter(d=>tasks[d.id]).length;
         if(myDone===myTasks.length && myTasks.length>0){
-          launchConfetti();
-          showToast(ALL_DONE_REACTIONS[Math.floor(Math.random()*ALL_DONE_REACTIONS.length)]);
-          recordWeekCompletion(selectedPerson, true);
-        } else {
-          showToast(TASK_REACTIONS[Math.floor(Math.random()*TASK_REACTIONS.length)]);
-          recordWeekCompletion(selectedPerson, false);
-        }
+          launchConfetti(); showToast(ALL_DONE_REACTIONS[Math.floor(Math.random()*ALL_DONE_REACTIONS.length)]); recordWeekCompletion(selectedPerson, true);
+        } else { showToast(TASK_REACTIONS[Math.floor(Math.random()*TASK_REACTIONS.length)]); recordWeekCompletion(selectedPerson, false); }
       }
-      renderProgress(rs,tasks); renderYourTasks(rs,tasks); renderLeaderboard(rs,tasks);
+      renderProgress(rs,tasks); renderYourTasks(rs,tasks); renderLeaderboard(rs,tasks); renderShared(rs,tasks); renderTrash(rs,tasks);
     }
     document.addEventListener("change",onToggleTask);
 
     /* ══════════ SIDE MENU ══════════ */
     function toggleSideMenu() { document.getElementById('sideMenu').classList.toggle('open'); document.getElementById('sideOverlay').classList.toggle('open'); updateMenuBadges(); }
     function closeSideMenu() { document.getElementById('sideMenu').classList.remove('open'); document.getElementById('sideOverlay').classList.remove('open'); }
-    function openPanel(id) { closeSideMenu(); document.getElementById(id).classList.add('open'); if(id==='swapPanel') renderSwapPanel(); if(id==='awardsPanel') renderAwardsPanel(); if(id==='maintPanel') renderMaintPanel(); }
+    function openPanel(id) { closeSideMenu(); document.getElementById(id).classList.add('open'); if(id==='swapPanel') renderSwapPanel(); if(id==='awardsPanel') renderAwardsPanel(); if(id==='maintPanel') renderMaintPanel(); if(id==='photoWallPanel') renderPhotoWall(); }
     function closePanel(id) { document.getElementById(id).classList.remove('open'); }
     function updateMenuBadges() {
       const sw=loadSwaps().filter(s=>s.week===getCurrentWeekKey()&&s.to===selectedPerson&&s.status==='pending');
@@ -1270,6 +1286,21 @@ const sharedAreas = [
     }
     function removeProof(taskId) { const p=loadProof();delete p[taskId];saveProof(p);renderApp(); }
     function viewProof(taskId) { const p=loadProof()[taskId]; if(!p)return; const dt=new Date(p.time).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'}); document.getElementById('mvContent').innerHTML=`<img src="${p.photo}" style="max-width:90%;max-height:70vh;border-radius:12px" /><div style="color:white;font-size:0.82rem;margin-top:10px;text-align:center">📸 by ${escapeHtml(p.by)} · ${dt}</div>`; document.getElementById('mediaViewer').classList.add('open'); }
+
+    /* ══════════ PHOTO WALL ══════════ */
+    function renderPhotoWall() {
+      const body=document.getElementById('photoWallBody'), proofs=loadProof(), rs=advanceRotationToCurrentWeek(), defs=allTaskDefinitions(rs);
+      const entries=Object.entries(proofs).map(([id,p])=>{const d=defs.find(x=>x.id===id);return{id,photo:p.photo,by:p.by,time:p.time,task:d?d.task:'Task',section:d?d.section:''};}).sort((a,b)=>b.time-a.time);
+      if(!entries.length){body.innerHTML='<div style="text-align:center;color:var(--muted);padding:40px 0;font-size:0.85rem">📸 No proof photos yet this week<br>Complete a task to add one!</div>';return;}
+      let html='<div style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;text-align:center">This week\'s task proof photos — visible to all housemates</div>';
+      html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+      entries.forEach(e=>{
+        const dt=new Date(e.time).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
+        html+=`<div style="border-radius:12px;overflow:hidden;border:1.5px solid var(--line);background:white"><img src="${e.photo}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;cursor:pointer" data-proof-view="${e.id}" /><div style="padding:8px"><div style="font-weight:700;font-size:0.78rem">${escapeHtml(e.task)}</div><div style="font-size:0.68rem;color:var(--muted)">${escapeHtml(e.by)} · ${dt}</div></div></div>`;
+      });
+      html+='</div>';
+      body.innerHTML=html;
+    }
 
     /* ── Media Viewer ── */
     function closeMV() { document.getElementById('mediaViewer').classList.remove('open'); document.getElementById('mvContent').innerHTML=''; }
