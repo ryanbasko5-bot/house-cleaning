@@ -34,6 +34,7 @@
 
     /* ── Hero ── */
     .hero {
+      position: relative;
       background: linear-gradient(135deg, #60aee0 0%, #7c6ee6 55%, #4ecdc4 100%);
       color: white;
       border-radius: 22px;
@@ -341,6 +342,79 @@
     }
     .streak-badge.none { opacity: 0.5; }
 
+    /* ── Hamburger ── */
+    .hamburger-btn {
+      position: absolute; top: 16px; right: 14px;
+      background: rgba(255,255,255,0.2); border: none; border-radius: 10px;
+      padding: 8px 10px; cursor: pointer; z-index: 10;
+      -webkit-tap-highlight-color: transparent; min-height: auto;
+    }
+    .hamburger-btn span { display: block; width: 18px; height: 2px; background: white; margin: 4px 0; border-radius: 2px; }
+
+    /* ── Side Menu ── */
+    .side-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; opacity: 0; visibility: hidden; transition: all 0.3s; }
+    .side-overlay.open { opacity: 1; visibility: visible; }
+    .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: white; z-index: 101; transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow-y: auto; }
+    .side-menu.open { left: 0; }
+    .sm-head { background: linear-gradient(135deg, #60aee0, #7c6ee6); color: white; padding: 48px 20px 20px; }
+    .sm-head h2 { font-size: 1.1rem; font-weight: 800; }
+    .sm-head p { font-size: 0.75rem; opacity: 0.8; margin-top: 4px; }
+    .sm-items { padding: 8px 0; }
+    .sm-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; cursor: pointer; font-size: 0.88rem; font-weight: 600; color: var(--ink); border: none; background: none; width: 100%; text-align: left; -webkit-tap-highlight-color: transparent; min-height: auto; }
+    .sm-item:active { background: #f0f0fc; }
+    .sm-badge { background: var(--danger); color: white; font-size: 0.62rem; padding: 2px 6px; border-radius: 99px; font-weight: 700; margin-left: auto; }
+
+    /* ── Panels ── */
+    .panel { position: fixed; inset: 0; background: white; z-index: 200; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); overflow-y: auto; }
+    .panel.open { transform: translateY(0); }
+    .panel-bar { display: flex; align-items: center; gap: 10px; padding: 16px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: white; z-index: 1; }
+    .panel-back { background: none; border: none; font-size: 1.2rem; padding: 4px 8px; cursor: pointer; color: var(--purple); min-height: auto; font-weight: 700; }
+    .panel-ttl { font-size: 1rem; font-weight: 800; }
+    .panel-body { padding: 16px; max-width: 540px; margin: 0 auto; }
+
+    /* ── Swap Cards ── */
+    .swap-card { background: #f8f9ff; border: 1.5px solid var(--line); border-radius: 14px; padding: 12px; margin-bottom: 10px; }
+    .swap-hdr { font-weight: 700; font-size: 0.85rem; margin-bottom: 4px; }
+    .swap-det { font-size: 0.78rem; color: var(--muted); }
+    .swap-acts { display: flex; gap: 6px; margin-top: 8px; }
+    .swap-acts button { padding: 6px 14px; border-radius: 8px; font-size: 0.78rem; min-height: 32px; }
+    .swap-ok { background: var(--teal); color: white; }
+    .swap-no { background: var(--line); color: var(--ink); }
+    .swap-st { font-size: 0.72rem; font-weight: 700; margin-top: 6px; }
+
+    /* ── Maintenance ── */
+    .mt-card { background: white; border: 1.5px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+    .mt-card.fixed { opacity: 0.6; border-color: var(--teal); }
+    .mt-ttl { font-weight: 800; font-size: 0.9rem; }
+    .mt-meta { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+    .mt-desc { font-size: 0.82rem; margin-top: 6px; line-height: 1.4; }
+    .mt-media { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .mt-thumb { width: 80px; height: 60px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid var(--line); }
+    .mt-vid { width: 80px; height: 60px; border-radius: 8px; cursor: pointer; border: 1px solid var(--line); background: #22304a; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; }
+    .mt-acts { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .mt-acts button { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; min-height: 30px; }
+    .mt-fix { background: var(--teal); color: white; }
+    .mt-fix:disabled { opacity: 0.4; cursor: not-allowed; }
+    .mt-del { background: var(--line); color: var(--ink); }
+    .mt-badge { display: inline-block; background: #d1fae5; color: #065f46; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-top: 6px; }
+
+    /* ── Awards ── */
+    .aw-card { background: linear-gradient(135deg, #f8f9ff, #eef9f9); border: 1.5px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 10px; text-align: center; }
+    .aw-emoji { font-size: 2rem; }
+    .aw-title { font-weight: 800; font-size: 0.9rem; margin-top: 4px; }
+    .aw-name { font-size: 0.82rem; color: var(--purple); font-weight: 700; margin-top: 2px; }
+    .aw-reason { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+    /* ── Photo Proof ── */
+    .proof-btn { display: inline-block; background: none; border: 1.5px dashed var(--line); border-radius: 8px; padding: 3px 8px; font-size: 0.68rem; color: var(--muted); cursor: pointer; min-height: auto; margin-top: 4px; }
+    .proof-thumb { width: 50px; height: 38px; object-fit: cover; border-radius: 6px; margin-top: 4px; border: 1px solid var(--line); cursor: pointer; }
+
+    /* ── Media Viewer ── */
+    .mv { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 300; display: none; align-items: center; justify-content: center; flex-direction: column; }
+    .mv.open { display: flex; }
+    .mv img, .mv video { max-width: 90%; max-height: 80vh; border-radius: 12px; }
+    .mv-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 1.5rem; padding: 8px 14px; border-radius: 12px; cursor: pointer; min-height: auto; }
+
     @supports (padding: max(0px)) {
       .shell { padding-bottom: max(100px, calc(60px + env(safe-area-inset-bottom))); }
     }
@@ -349,6 +423,7 @@
 <body>
   <div class="shell">
     <section class="hero">
+      <button class="hamburger-btn" onclick="toggleSideMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
       <h1>🏡 10 Glenfield Street</h1>
       <div class="subtitle">Cleaning Schedule ✨</div>
       <div class="meta" id="todayDate"></div>
@@ -402,6 +477,55 @@
         <button class="btn-primary" onclick="saveEmailSetup()">Save</button>
       </div>
     </div>
+  </div>
+
+  <!-- Side Menu -->
+  <div class="side-overlay" id="sideOverlay" onclick="closeSideMenu()"></div>
+  <div class="side-menu" id="sideMenu">
+    <div class="sm-head"><h2>🏡 Menu</h2><p>10 Glenfield St</p></div>
+    <div class="sm-items">
+      <button class="sm-item" onclick="openPanel('swapPanel')"><span>🔄</span> Swap Requests <span class="sm-badge" id="swapBadge" style="display:none">0</span></button>
+      <button class="sm-item" onclick="openPanel('awardsPanel')"><span>🏅</span> Housemate Awards</button>
+      <button class="sm-item" onclick="openPanel('maintPanel')"><span>🔧</span> Maintenance Log <span class="sm-badge" id="maintBadge" style="display:none">0</span></button>
+    </div>
+  </div>
+
+  <!-- Swap Panel -->
+  <div class="panel" id="swapPanel">
+    <div class="panel-bar"><button class="panel-back" onclick="closePanel('swapPanel')">←</button><div class="panel-ttl">🔄 Swap Requests</div></div>
+    <div class="panel-body" id="swapBody"></div>
+  </div>
+
+  <!-- Awards Panel -->
+  <div class="panel" id="awardsPanel">
+    <div class="panel-bar"><button class="panel-back" onclick="closePanel('awardsPanel')">←</button><div class="panel-ttl">🏅 Housemate Awards</div></div>
+    <div class="panel-body" id="awardsBody"></div>
+  </div>
+
+  <!-- Maintenance Panel -->
+  <div class="panel" id="maintPanel">
+    <div class="panel-bar"><button class="panel-back" onclick="closePanel('maintPanel')">←</button><div class="panel-ttl">🔧 Maintenance Log</div><button class="btn-primary" style="margin-left:auto;padding:6px 12px;font-size:0.78rem;min-height:32px" onclick="openMaintForm()">+ Report</button></div>
+    <div class="panel-body" id="maintBody"></div>
+  </div>
+
+  <!-- New Maintenance Modal -->
+  <div class="modal" id="maintModal">
+    <div class="modal-card">
+      <h3>🔧 Report an Issue</h3>
+      <div class="field"><label>Title</label><input id="mtTitle" placeholder="e.g. Tap leaking in kitchen" /></div>
+      <div class="field"><label>Description</label><input id="mtDesc" placeholder="Details..." /></div>
+      <div class="field"><label>Photos / Videos</label><input type="file" id="mtFiles" accept="image/*,video/*" multiple capture="environment" style="font-size:0.82rem" /></div>
+      <div class="row">
+        <button onclick="closeMaintForm()">Cancel</button>
+        <button class="btn-primary" onclick="submitMaintEntry()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Media Viewer -->
+  <div class="mv" id="mediaViewer">
+    <button class="mv-close" onclick="closeMV()">✕</button>
+    <div id="mvContent"></div>
   </div>
 
   <script>
@@ -800,7 +924,9 @@ const sharedAreas = [
         const whenLabel=isToday?"📅 TODAY":(def.day==="This week" && myPlanned ? `📅 Planned: ${myPlanned}` : `📅 ${def.dateStr}`);
         const doneDate = doneDates[def.id];
         const doneLabel = done && doneDate ? `<div class="yt-done">✅ Done ${doneDate}</div>` : "";
-        item.innerHTML=`<input type="checkbox" ${done?"checked":""} data-task-id="${def.id}" /><div><div class="yt-label">${escapeHtml(def.task)}</div><div class="yt-where">${escapeHtml(def.section)}</div><div class="yt-date">${whenLabel}</div>${doneLabel}</div>`;
+        const ytProof=loadProof()[def.id];
+        const ytProofEl=done?(ytProof?`<div><img class="proof-thumb" src="${ytProof.photo}" data-proof-view="${def.id}" style="margin-top:4px" /></div>`:`<div><span class="proof-btn" data-proof-add="${def.id}">📷 Add proof</span></div>`):'';
+        item.innerHTML=`<input type="checkbox" ${done?"checked":""} data-task-id="${def.id}" /><div><div class="yt-label">${escapeHtml(def.task)}</div><div class="yt-where">${escapeHtml(def.section)}</div><div class="yt-date">${whenLabel}</div>${doneLabel}${ytProofEl}</div>`;
         section.appendChild(item);
       });
 
@@ -865,7 +991,11 @@ const sharedAreas = [
     function renderTaskRow(id,label,checked) {
       const row=document.createElement("label");
       row.className=`task-row${checked?" done":""}`;
-      row.innerHTML=`<input type="checkbox" ${checked?"checked":""} data-task-id="${id}" /><span class="label">${escapeHtml(label)}</span>`;
+      const proof=loadProof()[id];
+      let extra='';
+      if(checked&&proof) extra=`<span style="margin-left:auto;flex-shrink:0"><img class="proof-thumb" src="${proof.photo}" data-proof-view="${id}" /></span>`;
+      else if(checked) extra=`<span style="margin-left:auto;flex-shrink:0" class="proof-btn" data-proof-add="${id}">📷</span>`;
+      row.innerHTML=`<input type="checkbox" ${checked?"checked":""} data-task-id="${id}" /><span class="label">${escapeHtml(label)}</span>${extra}`;
       return row;
     }
 
@@ -992,6 +1122,165 @@ const sharedAreas = [
       renderProgress(rs,tasks); renderYourTasks(rs,tasks); renderLeaderboard(rs,tasks);
     }
     document.addEventListener("change",onToggleTask);
+
+    /* ══════════ SIDE MENU ══════════ */
+    function toggleSideMenu() { document.getElementById('sideMenu').classList.toggle('open'); document.getElementById('sideOverlay').classList.toggle('open'); updateMenuBadges(); }
+    function closeSideMenu() { document.getElementById('sideMenu').classList.remove('open'); document.getElementById('sideOverlay').classList.remove('open'); }
+    function openPanel(id) { closeSideMenu(); document.getElementById(id).classList.add('open'); if(id==='swapPanel') renderSwapPanel(); if(id==='awardsPanel') renderAwardsPanel(); if(id==='maintPanel') renderMaintPanel(); }
+    function closePanel(id) { document.getElementById(id).classList.remove('open'); }
+    function updateMenuBadges() {
+      const sw=loadSwaps().filter(s=>s.week===getCurrentWeekKey()&&s.to===selectedPerson&&s.status==='pending');
+      const sb=document.getElementById('swapBadge'); if(sw.length){sb.style.display='';sb.textContent=sw.length;}else sb.style.display='none';
+      const mt=loadMaintLog().filter(e=>!e.fixed);
+      const mb=document.getElementById('maintBadge'); if(mt.length){mb.style.display='';mb.textContent=mt.length;}else mb.style.display='none';
+    }
+
+    /* ══════════ SWAP REQUESTS ══════════ */
+    function loadSwaps() { return loadJSON('swaps_v1',[]); }
+    function saveSwaps(s) { saveJSON('swaps_v1',s); }
+    function renderSwapPanel() {
+      const body=document.getElementById('swapBody'), swaps=loadSwaps(), rs=advanceRotationToCurrentWeek(), tasks=loadWeekTasks(), wk=getCurrentWeekKey();
+      const cur=swaps.filter(s=>s.week===wk);
+      let html='';
+      if(selectedPerson){
+        const defs=allTaskDefinitions(rs), my=defs.filter(d=>isAssignedToPerson(d.assignedTo,selectedPerson)&&!tasks[d.id]);
+        if(my.length){
+          html+=`<div style="margin-bottom:16px"><div style="font-weight:700;font-size:0.85rem;margin-bottom:8px">Request a swap</div>`;
+          html+=`<select id="swTask" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:10px;font-size:0.85rem;margin-bottom:6px">${my.map(t=>`<option value="${t.id}">${escapeHtml(t.task)} (${escapeHtml(t.section)})</option>`).join('')}</select>`;
+          html+=`<select id="swPerson" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:10px;font-size:0.85rem;margin-bottom:6px">${OCCUPIED_RESIDENTS.filter(r=>r!==selectedPerson).map(r=>`<option value="${r}">${escapeHtml(r)}</option>`).join('')}</select>`;
+          html+=`<button class="btn-primary" style="width:100%" onclick="createSwap()">Send Swap Request</button></div>`;
+        }
+      }
+      const inc=cur.filter(s=>s.to===selectedPerson&&s.status==='pending');
+      if(inc.length){
+        html+=`<div style="font-weight:700;font-size:0.85rem;margin-bottom:8px">📥 Incoming</div>`;
+        inc.forEach(s=>{html+=`<div class="swap-card"><div class="swap-hdr">${escapeHtml(s.from)} wants to swap</div><div class="swap-det">"${escapeHtml(s.taskName)}" → you</div><div class="swap-acts"><button class="swap-ok" onclick="respondSwap('${s.id}','accepted')">Accept</button><button class="swap-no" onclick="respondSwap('${s.id}','declined')">Decline</button></div></div>`;});
+      }
+      if(cur.length){
+        html+=`<div style="font-weight:700;font-size:0.85rem;margin:12px 0 8px">📋 This Week</div>`;
+        cur.forEach(s=>{
+          const st=s.status==='pending'?'⏳ Pending':s.status==='accepted'?'✅ Accepted':'❌ Declined';
+          html+=`<div class="swap-card"><div class="swap-hdr">${escapeHtml(s.from)} → ${escapeHtml(s.to)}</div><div class="swap-det">${escapeHtml(s.taskName)}</div><div class="swap-st">${st}</div></div>`;
+        });
+      }
+      if(!html) html='<div style="text-align:center;color:var(--muted);padding:40px 0;font-size:0.85rem">No swap requests this week<br>Select yourself first to create one</div>';
+      body.innerHTML=html;
+    }
+    function createSwap() {
+      if(!selectedPerson) return;
+      const tid=document.getElementById('swTask').value, to=document.getElementById('swPerson').value;
+      const rs=advanceRotationToCurrentWeek(), defs=allTaskDefinitions(rs), def=defs.find(d=>d.id===tid);
+      if(!def) return;
+      const sw=loadSwaps(); sw.push({id:Date.now().toString(36),from:selectedPerson,to,taskId:tid,taskName:def.task+' ('+def.section+')',status:'pending',week:getCurrentWeekKey()});
+      saveSwaps(sw); showToast('Swap request sent! 🔄'); renderSwapPanel();
+    }
+    function respondSwap(id,status) {
+      const sw=loadSwaps(), s=sw.find(x=>x.id===id); if(s) s.status=status; saveSwaps(sw);
+      showToast(status==='accepted'?'Swap accepted! ✅':'Swap declined ❌'); renderSwapPanel();
+    }
+
+    /* ══════════ HOUSEMATE AWARDS ══════════ */
+    function renderAwardsPanel() {
+      const body=document.getElementById('awardsBody'), at=loadAllTime(), sk=loadStreaks(), awards=[];
+      const sorted=OCCUPIED_RESIDENTS.map(n=>({name:n,total:at[n]||0})).sort((a,b)=>b.total-a.total);
+      if(sorted[0]&&sorted[0].total>0) awards.push({e:'👑',t:'Most Tasks Done',n:sorted[0].name,r:`${sorted[0].total} tasks all time`});
+      const bst=OCCUPIED_RESIDENTS.map(n=>({name:n,s:(sk[n]||{}).best||0})).sort((a,b)=>b.s-a.s);
+      if(bst[0]&&bst[0].s>0) awards.push({e:'🔥',t:'Longest Streak',n:bst[0].name,r:`${bst[0].s}-week streak`});
+      const cst=OCCUPIED_RESIDENTS.map(n=>({name:n,s:(sk[n]||{}).current||0})).sort((a,b)=>b.s-a.s);
+      if(cst[0]&&cst[0].s>0) awards.push({e:'⚡',t:'Currently On Fire',n:cst[0].name,r:`${cst[0].s}-week active streak`});
+      if(sorted[1]&&sorted[1].total>0) awards.push({e:'⭐',t:'Rising Star',n:sorted[1].name,r:`${sorted[1].total} tasks and climbing`});
+      const last=sorted.filter(s=>s.total>=0).reverse();
+      if(last[0]&&sorted[0].total>0&&last[0].name!==sorted[0].name) awards.push({e:'👻',t:'Mysteriously Always Busy',n:last[0].name,r:`${last[0].total} tasks... slay?`});
+      let html='<div style="font-size:0.82rem;color:var(--muted);margin-bottom:16px;text-align:center">Based on all-time stats</div>';
+      if(!awards.length) html+='<div style="text-align:center;color:var(--muted);padding:40px 0;font-size:0.85rem">No awards yet — start completing tasks!</div>';
+      else awards.forEach(a=>{html+=`<div class="aw-card"><div class="aw-emoji">${a.e}</div><div class="aw-title">${escapeHtml(a.t)}</div><div class="aw-name">${escapeHtml(a.n)}</div><div class="aw-reason">${escapeHtml(a.r)}</div></div>`;});
+      body.innerHTML=html;
+    }
+
+    /* ══════════ MAINTENANCE LOG ══════════ */
+    function loadMaintLog() { const log=loadJSON('maint_log_v1',[]); const now=Date.now(), wk=7*864e5; return log.filter(e=>!(e.fixed&&e.fixedDate&&(now-e.fixedDate>wk))); }
+    function saveMaintLog(log) { try{saveJSON('maint_log_v1',log);}catch(e){alert('Storage full. Delete old media to free space.');} }
+    function renderMaintPanel() {
+      const body=document.getElementById('maintBody'), log=loadMaintLog(); saveMaintLog(log);
+      const unfixed=log.filter(e=>!e.fixed), fixed=log.filter(e=>e.fixed);
+      let html='';
+      if(unfixed.length){html+='<div style="font-weight:700;font-size:0.88rem;margin-bottom:10px">🔴 Open Issues</div>';unfixed.forEach(e=>{html+=mtCard(e);});}
+      if(fixed.length){html+='<div style="font-weight:700;font-size:0.88rem;margin:16px 0 10px">✅ Fixed (auto-removes after 1 week)</div>';fixed.forEach(e=>{html+=mtCard(e);});}
+      if(!log.length) html='<div style="text-align:center;color:var(--muted);padding:40px 0;font-size:0.85rem">No issues reported<br>Tap "+ Report" to log a problem</div>';
+      body.innerHTML=html;
+    }
+    function mtCard(e) {
+      const hasM=e.media&&e.media.length>0, canFix=hasM&&!e.fixed;
+      const dt=new Date(e.reportedDate).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
+      let h=`<div class="mt-card${e.fixed?' fixed':''}"><div class="mt-ttl">${escapeHtml(e.title)}</div><div class="mt-meta">Reported by ${escapeHtml(e.reportedBy)} · ${dt}</div>`;
+      if(e.description) h+=`<div class="mt-desc">${escapeHtml(e.description)}</div>`;
+      if(hasM){
+        h+='<div class="mt-media">';
+        e.media.forEach((m,i)=>{
+          if(m.type==='image') h+=`<img class="mt-thumb" src="${m.data}" data-mt-id="${e.id}" data-mt-idx="${i}" />`;
+          else h+=`<div class="mt-vid" data-mt-vid="${e.id}" data-mt-vidx="${i}">▶</div>`;
+        });
+        h+='</div>';
+      }
+      if(e.fixed){const fd=new Date(e.fixedDate).toLocaleDateString('en-AU',{day:'numeric',month:'short'});h+=`<div class="mt-badge">✅ Fixed ${fd}</div>`;}
+      h+='<div class="mt-acts">';
+      if(!e.fixed){
+        h+=`<button class="mt-fix"${canFix?'':' disabled'} onclick="fixMaint('${e.id}')">${canFix?'✅ Mark Fixed':'📷 Add photo to fix'}</button>`;
+        h+=`<label style="cursor:pointer"><button class="mt-del" style="pointer-events:none">📎 Add Media</button><input type="file" accept="image/*,video/*" multiple capture="environment" style="display:none" onchange="addMtMedia('${e.id}',this)" /></label>`;
+      }
+      if(hasM) h+=`<button class="mt-del" onclick="delMtMedia('${e.id}')">🗑️ Media</button>`;
+      h+=`<button class="mt-del" onclick="delMaint('${e.id}')">❌ Delete</button>`;
+      h+='</div></div>';
+      return h;
+    }
+    function openMaintForm() { document.getElementById('maintModal').classList.add('open'); document.getElementById('mtTitle').value=''; document.getElementById('mtDesc').value=''; document.getElementById('mtFiles').value=''; }
+    function closeMaintForm() { document.getElementById('maintModal').classList.remove('open'); }
+    function fileToData(file,isImg) {
+      return new Promise((res,rej)=>{
+        if(file.size>5*1024*1024){rej('Too large');return;}
+        const r=new FileReader();
+        r.onload=()=>{
+          if(isImg){const img=new Image();img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>600){h=h*600/w;w=600;}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);res(c.toDataURL('image/jpeg',0.6));};img.onerror=rej;img.src=r.result;}
+          else{if(r.result.length>3*1024*1024){rej('Video too large');return;}res(r.result);}
+        };r.onerror=rej;r.readAsDataURL(file);
+      });
+    }
+    async function submitMaintEntry() {
+      const title=document.getElementById('mtTitle').value.trim(); if(!title){alert('Please add a title');return;}
+      const desc=document.getElementById('mtDesc').value.trim(), files=document.getElementById('mtFiles').files, who=selectedPerson||'Unknown', media=[];
+      for(const f of files){try{const d=await fileToData(f,f.type.startsWith('image/'));media.push({type:f.type.startsWith('image/')?'image':'video',data:d});}catch{alert('File too large');return;}}
+      const log=loadMaintLog(); log.unshift({id:Date.now().toString(36),title,description:desc,reportedBy:who,reportedDate:Date.now(),media,fixed:false,fixedDate:null});
+      saveMaintLog(log); closeMaintForm(); renderMaintPanel(); showToast('Issue reported 🔧');
+    }
+    function fixMaint(id) { const log=loadMaintLog(),e=log.find(x=>x.id===id); if(e&&e.media&&e.media.length>0){e.fixed=true;e.fixedDate=Date.now();saveMaintLog(log);renderMaintPanel();showToast('Marked as fixed ✅');} }
+    async function addMtMedia(id,input) {
+      const log=loadMaintLog(),e=log.find(x=>x.id===id); if(!e)return; if(!e.media) e.media=[];
+      for(const f of input.files){try{const d=await fileToData(f,f.type.startsWith('image/'));e.media.push({type:f.type.startsWith('image/')?'image':'video',data:d});}catch{alert('File too large');return;}}
+      saveMaintLog(log); renderMaintPanel();
+    }
+    function delMtMedia(id) { if(!confirm('Remove all media from this entry?'))return; const log=loadMaintLog(),e=log.find(x=>x.id===id); if(e){e.media=[];saveMaintLog(log);renderMaintPanel();} }
+    function delMaint(id) { if(!confirm('Delete this maintenance entry?'))return; let log=loadMaintLog(); log=log.filter(x=>x.id!==id); saveMaintLog(log); renderMaintPanel(); showToast('Entry deleted 🗑️'); }
+
+    /* ══════════ PHOTO PROOF ══════════ */
+    function loadProof() { return loadJSON(`proof_${getCurrentWeekKey()}`,{}); }
+    function saveProof(p) { try{saveJSON(`proof_${getCurrentWeekKey()}`,p);}catch{alert('Storage full');} }
+    async function addProof(taskId,input) {
+      if(!input.files[0])return;
+      try{const d=await fileToData(input.files[0],true);const p=loadProof();p[taskId]={photo:d,by:selectedPerson||'Unknown',time:Date.now()};saveProof(p);renderApp();showToast('Photo proof added 📸');}catch{alert('Photo too large');}
+    }
+    function removeProof(taskId) { const p=loadProof();delete p[taskId];saveProof(p);renderApp(); }
+    function viewProof(taskId) { const p=loadProof()[taskId]; if(!p)return; const dt=new Date(p.time).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'}); document.getElementById('mvContent').innerHTML=`<img src="${p.photo}" style="max-width:90%;max-height:70vh;border-radius:12px" /><div style="color:white;font-size:0.82rem;margin-top:10px;text-align:center">📸 by ${escapeHtml(p.by)} · ${dt}</div>`; document.getElementById('mediaViewer').classList.add('open'); }
+
+    /* ── Media Viewer ── */
+    function closeMV() { document.getElementById('mediaViewer').classList.remove('open'); document.getElementById('mvContent').innerHTML=''; }
+
+    /* ── Global click delegation for proof & media ── */
+    document.addEventListener('click',function(e) {
+      const pv=e.target.closest('[data-proof-view]'); if(pv){e.preventDefault();viewProof(pv.dataset.proofView);return;}
+      const pa=e.target.closest('[data-proof-add]'); if(pa){e.preventDefault();const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.capture='environment';inp.onchange=()=>addProof(pa.dataset.proofAdd,inp);inp.click();return;}
+      const mi=e.target.closest('[data-mt-id]'); if(mi){e.preventDefault();const log=loadMaintLog(),en=log.find(x=>x.id===mi.dataset.mtId);if(en&&en.media[mi.dataset.mtIdx]){const m=en.media[mi.dataset.mtIdx];document.getElementById('mvContent').innerHTML=`<img src="${m.data}" style="max-width:90%;max-height:80vh;border-radius:12px" />`;document.getElementById('mediaViewer').classList.add('open');}return;}
+      const mv=e.target.closest('[data-mt-vid]'); if(mv){e.preventDefault();const log=loadMaintLog(),en=log.find(x=>x.id===mv.dataset.mtVid);if(en&&en.media[mv.dataset.mtVidx]){const m=en.media[mv.dataset.mtVidx];document.getElementById('mvContent').innerHTML=`<video src="${m.data}" controls autoplay style="max-width:90%;max-height:80vh;border-radius:12px"></video>`;document.getElementById('mediaViewer').classList.add('open');}return;}
+    });
 
     /* ══════════ EMAIL ══════════ */
     function hasEmailSetup() { const c=getEmailConfig(); return Boolean(c&&c.key&&c.service&&c.template); }
