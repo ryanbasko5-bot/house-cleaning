@@ -321,14 +321,14 @@ const sharedAreas = [
       // Bathrooms — restricted pools (only users of that bathroom)
       { id:"sa_bath_down", name:"🚿 Downstairs Bathroom", bathPool:"down", tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
       { id:"sa_bath_up",   name:"🚿 Upstairs Bathroom",   bathPool:"up",   tasks:["Scrub toilet & seat","Clean sink & mirror","Scrub shower & mop floor"] },
-      // General areas — rotate among ALL 10 residents (split kitchen = 7 slots for fairer spread)
+      // General areas — rotate among remaining residents (after bathroom exclusion)
       { id:"sa_kitchen_a", name:"🍳 Kitchen – Surfaces",  tasks:["Wipe benches & clean sink","Clean stovetop & appliance fronts","Wipe splashback & rangehood"] },
       { id:"sa_kitchen_b", name:"🍳 Kitchen – Floors & Bins", tasks:["Sweep & mop kitchen floor","Empty & reline all bins","Wipe cupboard fronts"] },
       { id:"sa_laundry",   name:"🧺 Laundry Room",        tasks:["Wipe machines & surfaces","Clean laundry sink","Sweep & mop floor"] },
-      { id:"sa_ver_down",  name:"🌿 Downstairs Veranda",  tasks:["Sweep veranda floor","Mop veranda floor","Wipe down furniture","Tidy shoes & items"] },
-      { id:"sa_ver_up",    name:"🌿 Upstairs Veranda",    tasks:["Sweep veranda floor","Mop veranda floor","Wipe down furniture","Tidy items"] },
-      { id:"sa_hall_up",   name:"🚪 Upstairs Hallway",    tasks:["Sweep & mop hallway floor","Wipe light switches & door handles"] },
-      { id:"sa_hall_down", name:"🚪 Downstairs Hallway",  tasks:["Sweep & mop hallway floor","Wipe light switches & door handles"] },
+      { id:"sa_ver_down",  name:"🌿 Downstairs Veranda",  tasks:["Sweep & mop veranda floor","Wipe down furniture","Tidy shoes & items"] },
+      { id:"sa_ver_up",    name:"🌿 Upstairs Veranda",    tasks:["Sweep & mop veranda floor","Wipe down furniture","Tidy items & railings"] },
+      { id:"sa_hall_up",   name:"🚪 Upstairs Hallway",    tasks:["Sweep & mop hallway floor","Wipe light switches & door handles","Dust skirting boards & banisters"] },
+      { id:"sa_hall_down", name:"🚪 Downstairs Hallway",  tasks:["Sweep & mop hallway floor","Wipe light switches & door handles","Dust skirting boards & shoe rack"] },
     ];
 
     /* ── Date helpers ── */
@@ -360,10 +360,11 @@ const sharedAreas = [
 
     function advanceRotationToCurrentWeek() {
       const s=getRotationState(), cur=getCurrentWeekKey(), jumps=weeksBetween(s.anchorWeekKey,cur);
-      const nonBathCount = sharedAreas.filter(a=>!a.bathPool).length;
+      const generalCount = sharedAreas.filter(a=>!a.bathPool).length; // 7
       if(jumps>0){
         const n=OCCUPIED_RESIDENTS.length;
-        s.sharedStartIndex=(s.sharedStartIndex+nonBathCount*jumps)%n;
+        // General pool is 8 people (10 minus 2 bathroom assignees), rotate by 7 areas
+        s.sharedStartIndex=(s.sharedStartIndex+generalCount*jumps)%8;
         s.trashStartIndex=(s.trashStartIndex+DAYS.length*jumps)%n;
         s.bathDownIndex=(s.bathDownIndex+jumps)%DOWNSTAIRS_BATH_USERS.length;
         s.bathUpIndex=(s.bathUpIndex+jumps)%UPSTAIRS_BATH_USERS.length;
@@ -389,11 +390,21 @@ const sharedAreas = [
 
     /* ── Assignments ── */
     function getSharedAssignments(rs) {
-      const o={}; let nonBathIdx=0;
-      sharedAreas.forEach(a=>{
-        if(a.bathPool==="down") { o[a.id]=DOWNSTAIRS_BATH_USERS[rs.bathDownIndex%DOWNSTAIRS_BATH_USERS.length]; }
-        else if(a.bathPool==="up") { o[a.id]=UPSTAIRS_BATH_USERS[rs.bathUpIndex%UPSTAIRS_BATH_USERS.length]; }
-        else { o[a.id]=OCCUPIED_RESIDENTS[(rs.sharedStartIndex+nonBathIdx)%OCCUPIED_RESIDENTS.length]; nonBathIdx++; }
+      const o={};
+      // 1. Assign bathrooms first from restricted pools
+      const bathDownPerson = DOWNSTAIRS_BATH_USERS[rs.bathDownIndex % DOWNSTAIRS_BATH_USERS.length];
+      const bathUpPerson = UPSTAIRS_BATH_USERS[rs.bathUpIndex % UPSTAIRS_BATH_USERS.length];
+      o["sa_bath_down"] = bathDownPerson;
+      o["sa_bath_up"] = bathUpPerson;
+      // 2. Exclude bathroom assignees from general pool so nobody gets 2 areas
+      const taken = new Set([bathDownPerson, bathUpPerson]);
+      const available = OCCUPIED_RESIDENTS.filter(r => !taken.has(r));
+      // 3. Assign general areas from remaining pool (8 people, 7 areas = very even)
+      let idx = 0;
+      sharedAreas.forEach(a => {
+        if (a.bathPool) return;
+        o[a.id] = available[(rs.sharedStartIndex + idx) % available.length];
+        idx++;
       });
       return o;
     }
